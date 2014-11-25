@@ -3,14 +3,14 @@
 #ifndef __LED_MATRIX_D_MAIN_H__
 #define __LED_MATRIX_D_MAIN_H__
 namespace ledMatrixD {
-  int pwm_bits = -1;
-	bool large_display = false;
-	int demo = -1;
-	int rows = 32;
-	int chain = 1;
-	int scroll_ms = 30;
-	bool do_luminance_correct = true;
-	rgb_matrix::GPIO io;
+  extern int pwm_bits;
+	extern bool large_display;
+	extern int demo;
+	extern int rows;
+	extern int chain;
+	extern int scroll_ms;
+	extern bool do_luminance_correct;
+	extern rgb_matrix::GPIO io;
 }
 #endif
 
