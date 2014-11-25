@@ -12,7 +12,7 @@ namespace ledMatrixD
     public:
       Display();
       virtual void show() = 0;
-      void undefinedMsg(char* section , char* attr);
+      void undefinedMsg(std::string section , std::string attr);
       void getFilePath(char* filename);
       bool LoadPPM(const char *filename) {
         FILE *f = fopen(filename, "r");
