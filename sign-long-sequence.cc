@@ -4,6 +4,8 @@
 #include "led-matrixd-main.h"
 #include "sign-long-sequence.h"
 
+#include <iostream>
+
 namespace ledMatrixD {
   Canvas* canvas = NULL;
   Display::Display(){
@@ -14,10 +16,10 @@ namespace ledMatrixD {
     this->mainPath = std::string(mainPathCStr);
   }
   void Display::getFilePath(char* filename){
-    return std::string(this->mainPath) + "/" + fileName;
+    return std::string(this->mainPath) + "/" + filename;
   }
-  void Display::undefinedMsg(char* section, char* attr){
-    fprintf(stderr, "led-matrixd: undefined %s > %s\n", section, attr);
+  void Display::undefinedMsg(std::string section, std::string attr){
+    std::cerr << "led-matrixd: undefined " << section << " > " << attr << std::endl;
     exit(EXIT_FAILURE);
   }
   /**
@@ -27,7 +29,7 @@ namespace ledMatrixD {
    *
    */
   TitleDisplay::TitleDisplay(){
-    if(ini::get_int("ITERATIONS", "title_scroll", &(this->scrollTitle)) != 0){
+    if(ini::get_int("ITERATIONS", "title_scroll", &(this->titleScroll)) != 0){
       this->undefinedMsg("ITERATIONS", "title_scroll");
     }
   }
