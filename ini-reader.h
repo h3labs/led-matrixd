@@ -19,8 +19,8 @@ namespace ini {
 	void print_section(char* name){
 		printf("[%s]\n", name);
 	}
-  struct ::collection* get_item(const char* section, const char* attribute){
-    struct ::collection* item = NULL;
+  struct ::collection_item* get_item(const char* section, const char* attribute){
+    struct ::collection_item* item = NULL;
     int ares = get_config_item(section_list[i], attr_list[j], ini_config, &item);
     if(ares != 0){
       return NULL;
@@ -29,13 +29,13 @@ namespace ini {
   }
   char* get_string(const char* section, const char* attribute, char** value){
     int error;
-    struct ::collection* item = get_item(section, attribute);
+    struct ::collection_item* item = get_item(section, attribute);
     *value = get_string_config_value(item, &error);
     return error;
   }
   int get_int(const char* section, const char* attribute, int* value){
     int error;
-    struct ::collection* item = get_item(section, attribute);
+    struct ::collection_item* item = get_item(section, attribute);
     *value = get_int32_config_value(item, 0, 0, &error);
     return error;
   }
