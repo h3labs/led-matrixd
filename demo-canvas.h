@@ -8,6 +8,8 @@
 // [>] [>]
 //         v
 // [<] [<]
+#ifndef __LED_MATRIX_D_DEMO_CANVAS_H__
+#define __LED_MATRIX_D_DEMO_CANVAS_H__
 class LargeSquare64x64Canvas : public Canvas {
 public:
   // This class takes over ownership of the delegatee.
@@ -798,3 +800,4 @@ private:
   int* barMeans_;
   int t_;
 };
+#endif

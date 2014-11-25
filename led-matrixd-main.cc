@@ -1,8 +1,7 @@
-extern "C" {
-	#include "ini_config.h"
-}
 #include "led-matrix.h"
 #include "threaded-canvas-manipulator.h"
+#include "ini-reader.h"
+#include "led-matrixd-main.h"
 
 #include <assert.h>
 #include <getopt.h>
@@ -75,7 +74,6 @@ namespace ledMatrixD
 					printf("waiting for events to happen in signcfg/ directory\n");
 					FD_ZERO(&ifs);
 					FD_SET(fd, &ifs);
-					FD_SET(0, &ifs);
 					num_fds = select(fd_set_size, &ifs, NULL, NULL, NULL);
 					printf("got num_fds=%d\n", num_fds);
 					if (num_fds == -1){
@@ -85,19 +83,7 @@ namespace ledMatrixD
 						printf("directory something happened.\n");
 						if (FD_ISSET(fd, &ifs)){
 							this->notifyOfIEvents();
-						}else if(FD_ISSET(0, &ifs)){
-							int len;
-							char buf[200];
-							printf("got something from stdin\n");
-							len = read(0, (void*)buf, 200 * sizeof(char));
-							printf("read %d\n", len);
-							if (len == -1 && errno != EAGAIN){
-								perror("read() start of inotify struct");
-								exit(EXIT_FAILURE);
-							}
-							buf[len] = '\0';
-							printf("%s", buf);
-						}
+            }
 					}
 				}	
 			}
@@ -146,15 +132,6 @@ namespace ledMatrixD
 				return false;
 			}
 	};
-
-	int pwm_bits = -1;
-	bool large_display = false;
-	int demo = -1;
-	int rows = 32;
-	int chain = 1;
-	int scroll_ms = 30;
-	bool do_luminance_correct = true;
-	rgb_matrix::GPIO io;
 
 	class OpenCloseSign : public FileStatusNotifee { 
 		rgb_matrix::Canvas* canvas;
@@ -268,139 +245,49 @@ namespace ledMatrixD
 
 }
 
-namespace ini { 
-	//FILE SYSTEM
-	// filesystem locations for various things// should be changed for final deployment
-
-	// base directory for images
-	char* image_basedir = NULL;
-
-	// directories within image_basedir
-
-	// frames for the atom animation
-	char* atom_dir = NULL;
-	// notable images for random display
-	char* sprite_dir = NULL;
-
-	// location of the shop status file
-	char* shop_status_flag = NULL;
-
-	// location of font files
-	char* font_dir = NULL;
-
-
-	//TIMIMG
-	// all values in this section are milliseconds
-
-	// scroll speed
-	int scroll_ms = 0;
-	// how long to show mf000 before spinning
-	int atom_static_prespin_dur = 0;
-	// how long to show mf000 after spinning
-	int atom_static_postspin_dur = 0;
-
-	// how long each frame of the spinning atom is shown
-	int atom_frame_dur = 0;
-	// how long to display the date
-	int date_dur = 0;
-	// how long to let Conway's Game of Life run
-	int conway_dur = 0;
-	// how long to display Perlin noise (future feature)
-	// perlin_dur = 20000
-	// how long to display random image
-	int sprite_dur = 0;
-
-
-	//ITERATIONS
-	// how may times things should be repeated
-
-	// how many times to spin the atom
-	int atom_spin = 0;
-	// how many times to scroll the shop status
-	int status_scroll = 0;
-	// how many times to scroll the title
-	int title_scroll = 0;
-	// how many times to scroll the twitter
-	int twitter_scroll = 0;
-	// how many times to scroll the url
-	
-	// how many times to scroll the url
-	char* url_scroll = NULL;
-
-
-	//DATE	
-	// format string to be passed to date call
-	char* date_format = NULL;
-	// matrix x axis offset
-	int date_x = 0;
-	// matrix y axis offset
-	int date_y = 0;
-	// font to use for date display
-	char* date_font = NULL;
-	// date color
-	int date_r = 0;
-	int date_g = 0;
-	int date_b = 0;
-
-	void print_string(char* name, char* value){
-		printf("\t[%s] %s\n", name, value);
-	}
-	void print_int(char* name, int value){
-		printf("\t[%s] %d\n", name, value);
-	}
-	void print_section(char* name){
-		printf("[%s]\n", name);
-	}
-	void print_ini_variables(){
-		
-	}
-	
-	void read_file(const char* file){
-		struct ::collection_item* ini_config = NULL;
-		struct ::collection_item* errors = NULL;
-		//read ini file with all the configuration options 
-		int res = ::config_from_file("led-matrixd", file, &ini_config, INI_STOP_ON_ERROR, &errors);
-		if(res != 0){
-			perror("read_ini_file()");
-			exit(EXIT_FAILURE);
-		}   	
-		int num_sections = 0;
-		char** section_list = ::get_section_list(ini_config, &num_sections, NULL); 		
-		if(section_list == NULL){
-			perror("ini sections");
-			exit(EXIT_FAILURE);
-		}
-		int i;
-		for(i = 0; i < num_sections; i++){
-			printf("section_name: %s\n", section_list[i]);
-			int num_attr = 0;
-			char** attr_list = get_attribute_list(ini_config, section_list[i], &num_attr, NULL);
-			int j;
-			for(j = 0; j < num_attr; j++){
-				struct ::collection_item* item;
-				int ares = get_config_item(section_list[i], attr_list[j], ini_config, &item);
-				if(ares != 0){
-					perror("get_config_item()");
-					exit(EXIT_FAILURE);
-				}   	
-				char* item_string = get_string_config_value(item, NULL);
-				if(item_string == NULL){
-					perror("get_string_config_value()");
-					exit(EXIT_FAILURE);
-				}
-				printf("\t[%s] %s\n", attr_list[j], item_string);
-			}
-		}	
-	}
-}
 
 using namespace std;
 
+int sequence = 0;
+int usage(const char* msg){
+  printf( "led-matrixd: %s\n"
+          "usage: led-matrixd -C [ini file] -D [sequence run]\n"
+          "   C: file name (directory) where the ini configuration file\n"
+          "      resides.\n"
+          "   D: sequence to run repeatedly\n"
+          "       0: just shown open and close depending if file exists\n" 
+          "       1: show a custome sequence of images, close and open\n"
+          "\n", msg);
+}
+
 int main(int argc, char* argv[])
 {
-	//ledMatrixD::OpenCloseSign* openClose  = new ledMatrixD::OpenCloseSign();
-	//openClose->run();
-	ini::read_file("matrix.ini");
+  //TODO: getopt
+  int opt;
+  while ((opt = getopt(argc, argv, "C:D")) != -1) {
+    switch (opt) {
+    case 'C':
+      ini::ini_file = optarg;
+      break;
+    case 'D':
+      sequence = atoi(optarg);
+      if( 0 <= sequence && sequence <= 1){
+        usage("illegal value -D can only use 0 or 1");
+        exit(EXIT_FAILURE);
+      }
+      break;
+    }
+  }
+  ini::read_file(ini::ini_file);
+  switch(sequence){
+    case 0:
+      ledMatrixD::OpenCloseSign* openClose  = new ledMatrixD::OpenCloseSign();
+      openClose->run();
+      break;
+    case 1:
+      ledMatrixD::runLongSequence();
+      break;
+  }
 	return 0;
 }
 
