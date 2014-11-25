@@ -1,6 +1,10 @@
 #ifndef __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
 #define __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <string>
 namespace ledMatrixD
 {
   class Display {
