@@ -34,7 +34,7 @@ namespace ledMatrixD {
     }
   }
   void TitleDisplay::show(){
-    if(!this->loadPPM("")){
+    if(!this->LoadPPM("")){
     }
   }
   void initLongSequence(){
