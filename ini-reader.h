@@ -21,13 +21,13 @@ namespace ini {
 	}
   struct ::collection_item* get_item(const char* section, const char* attribute){
     struct ::collection_item* item = NULL;
-    int ares = get_config_item(section_list[i], attr_list[j], ini_config, &item);
+    int ares = get_config_item(section, attribute, ini_config, &item);
     if(ares != 0){
       return NULL;
     }  
     return item;
   }
-  char* get_string(const char* section, const char* attribute, char** value){
+  int get_string(const char* section, const char* attribute, char** value){
     int error;
     struct ::collection_item* item = get_item(section, attribute);
     *value = get_string_config_value(item, &error);
