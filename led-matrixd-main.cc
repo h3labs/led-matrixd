@@ -2,6 +2,7 @@
 #include "threaded-canvas-manipulator.h"
 #include "ini-reader.h"
 #include "led-matrixd-main.h"
+#include "sign-long-sequence.h"
 
 #include <assert.h>
 #include <getopt.h>
@@ -27,7 +28,7 @@ using std::min;
 using std::max;
 using namespace rgb_matrix;
 
-#include "canvas.h"
+#include "demo-canvas.h"
 
 namespace ledMatrixD
 {
