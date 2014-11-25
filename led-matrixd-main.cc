@@ -273,9 +273,10 @@ int main(int argc, char* argv[])
     }
   }
   ini::read_file(ini::ini_file);
+  ledMatrixD::OpenCloseSign* openClose = NULL;
   switch(sequence){
     case 0:
-      ledMatrixD::OpenCloseSign* openClose  = new ledMatrixD::OpenCloseSign();
+      openClose = new ledMatrixD::OpenCloseSign();
       openClose->run();
       break;
     case 1:
