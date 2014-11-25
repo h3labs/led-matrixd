@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string>
+
 namespace ledMatrixD
 {
   class Display {
@@ -87,44 +88,44 @@ namespace ledMatrixD
   class TitleDisplay : public Display {
     public:
       TitleDisplay();
-      void shown();
+      void show();
     private:
       int titleScroll = 0;
   };
   class LogoDisplay : public Display {
     public:
       LogoDisplay();
-      void shown();
+      void show();
   };
   class SpinLogoDisplay : public Display {
     public:
       SpinLogoDisplay();
-      void shown();
+      void show();
   };
   class ShopStatusDisplay : public Display {
     public:
       ShopStatusDisplay();
-      void shown();
+      void show();
   };
   class ConwaysDisplay : public Display {
     public:
       ConwaysDisplay();
-      void shown();
+      void show();
   };
   class URLDisplay : public Display {
     public:
       URLDisplay();
-      void shown();
+      void show();
   };
   class RandomSpriteDisplay : public Display {
     public:
       RandomSpriteDisplay();
-      void shown();
+      void show();
   };
   class TwitterDisplay : public Display {
     public:
       TwitterDisplay();
-      void shown();
+      void show();
   };
   void initLongSequence();
   void runLongSequence();
