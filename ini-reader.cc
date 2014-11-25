@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+extern "C" {
+	#include "ini_config.h"
+}
+
 namespace ini { 
   char* ini_file = "matrix.ini";
   struct ::collection_item* ini_config = NULL;
