@@ -1,5 +1,3 @@
-#include "led-matrix.h"
-#include "threaded-canvas-manipulator.h"
 #include "ini-reader.h"
 #include "led-matrixd-main.h"
 #include "demo-canvas.h"

@@ -10,6 +10,10 @@
 // [<] [<]
 #ifndef __LED_MATRIX_D_DEMO_CANVAS_H__
 #define __LED_MATRIX_D_DEMO_CANVAS_H__
+#include "led-matrix.h"
+#include "threaded-canvas-manipulator.h"
+#include <algorithm>
+
 using std::min;
 using std::max;
 using namespace rgb_matrix;
