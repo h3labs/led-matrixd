@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "ini-reader.h"
-#include "led-matrixd-main.h"
 #include "sign-long-sequence.h"
 
 #include <iostream>
