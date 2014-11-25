@@ -10,6 +10,10 @@
 // [<] [<]
 #ifndef __LED_MATRIX_D_DEMO_CANVAS_H__
 #define __LED_MATRIX_D_DEMO_CANVAS_H__
+using std::min;
+using std::max;
+using namespace rgb_matrix;
+
 class LargeSquare64x64Canvas : public Canvas {
 public:
   // This class takes over ownership of the delegatee.
