@@ -15,7 +15,7 @@ namespace ledMatrixD {
     }
     this->mainPath = std::string(mainPathCStr);
   }
-  void Display::getFilePath(char* filename){
+  void Display::getFilePath(std::string filename){
     return std::string(this->mainPath) + "/" + filename;
   }
   void Display::undefinedMsg(std::string section, std::string attr){
