@@ -1,5 +1,6 @@
 #ifndef __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
 #define __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
+#include <assert.h>
 namespace ledMatrixD
 {
   class Display {
@@ -78,49 +79,49 @@ namespace ledMatrixD
 
       Image current_image_;
       std::string mainPath;
-  }
+  };
   class TitleDisplay : public Display {
     public:
       TitleDisplay();
       void shown();
     private:
       int titleScroll = 0;
-  }
+  };
   class LogoDisplay : public Display {
     public:
       LogoDisplay();
       void shown();
-  }
+  };
   class SpinLogoDisplay : public Display {
     public:
       SpinLogoDisplay();
       void shown();
-  }
+  };
   class ShopStatusDisplay : public Display {
     public:
       ShopStatusDisplay();
       void shown();
-  }
+  };
   class ConwaysDisplay : public Display {
     public:
       ConwaysDisplay();
       void shown();
-  }
+  };
   class URLDisplay : public Display {
     public:
       URLDisplay();
       void shown();
-  }
+  };
   class RandomSpriteDisplay : public Display {
     public:
       RandomSpriteDisplay();
       void shown();
-  }
+  };
   class TwitterDisplay : public Display {
     public:
       TwitterDisplay();
       void shown();
-  }
+  };
   void initLongSequence();
   void runLongSequence();
 }

@@ -1,3 +1,5 @@
+#include "demo-canvas.h"
+
 #ifndef __LED_MATRIX_D_MAIN_H__
 #define __LED_MATRIX_D_MAIN_H__
 namespace ledMatrixD {
