@@ -243,7 +243,7 @@ namespace ledMatrixD
 using namespace std;
 
 int sequence = 0;
-int usage(const char* msg){
+void usage(const char* msg){
   printf( "led-matrixd: %s\n"
           "usage: led-matrixd -C [ini file] -D [sequence run]\n"
           "   C: file name (directory) where the ini configuration file\n"

@@ -15,7 +15,7 @@ all : $(BINARIES)
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
 
-led-matrixd : led-matrixd-main.o $(RGB_LIBRARY)
+led-matrixd : led-matrixd-main.o sign-long-sequence.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) $^  -o $@ $(LDFLAGS)
 
 led-matrixd-main.o: sign-long-sequence.o
