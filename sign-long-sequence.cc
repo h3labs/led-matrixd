@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "ini-reader.h"
 #include "led-matrixd-main.h"
+#include "sign-long-sequence.h"
 
 namespace ledMatrixD {
   Canvas* canvas = NULL;

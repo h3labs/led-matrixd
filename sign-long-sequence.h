@@ -1,3 +1,5 @@
+#ifndef __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
+#define __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
 namespace ledMatrixD
 {
   class Display {
@@ -122,3 +124,4 @@ namespace ledMatrixD
   void initLongSequence();
   void runLongSequence();
 }
+#endif
