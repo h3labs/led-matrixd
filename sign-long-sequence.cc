@@ -1,34 +1,37 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "ini-reader.h"
 #include "led-matrixd-main.h"
 
 namespace ledMatrixD {
   Canvas* canvas = NULL;
-  namespace Display {
-    Display(){
-      char* mainPathCStr = NULL;
-      if(ini::get_string("FILE SYSTEM", "image_basedir", &mainPathCStr) != 0){
-        this->undefinedMsg("FILE SYSTEM", "image_basedir");
-      }
-      this->mainPath = std::string(mainPathCStr);
+  Display::Display(){
+    char* mainPathCStr = NULL;
+    if(ini::get_string("FILE SYSTEM", "image_basedir", &mainPathCStr) != 0){
+      this->undefinedMsg("FILE SYSTEM", "image_basedir");
     }
-    void getFilePath(char* filename){
-      return std::string(this->mainPath) + "/" + fileName;
-    }
-    void undefinedMsg(char* section, char* attr){
-      fprintf(stderr, "led-matrixd: undefined %s > %s\n", section, attr);
-      exit(EXIT_FAILURE);
-    }
-
+    this->mainPath = std::string(mainPathCStr);
   }
-  namespace TitleDisplay {
-    TitleDisplay(){
-      if(ini::get_int("ITERATIONS", "title_scroll", &(this->scrollTitle)) != 0){
-        this->undefinedMsg("ITERATIONS", "title_scroll");
-      }
+  void Display::getFilePath(char* filename){
+    return std::string(this->mainPath) + "/" + fileName;
+  }
+  void Display::undefinedMsg(char* section, char* attr){
+    fprintf(stderr, "led-matrixd: undefined %s > %s\n", section, attr);
+    exit(EXIT_FAILURE);
+  }
+  /**
+   * class TitleDisplay
+   *
+   * Display a title contained in PPM format in title_card.ppm.
+   *
+   */
+  TitleDisplay::TitleDisplay(){
+    if(ini::get_int("ITERATIONS", "title_scroll", &(this->scrollTitle)) != 0){
+      this->undefinedMsg("ITERATIONS", "title_scroll");
     }
-    void show(){
-      if(!this->loadPPM(
+  }
+  void TitleDisplay::show(){
+    if(!this->loadPPM("")){
     }
   }
   void initLongSequence(){
