@@ -12,7 +12,18 @@
 #define __LED_MATRIX_D_DEMO_CANVAS_H__
 #include "led-matrix.h"
 #include "threaded-canvas-manipulator.h"
+
+#include <assert.h>
+#include <getopt.h>
+#include <limits.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include <algorithm>
+
 
 using std::min;
 using std::max;
