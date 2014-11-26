@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/dir.h>
 #include "ini-reader.h"
 #include "sign-long-sequence.h"
 
@@ -198,6 +200,61 @@ namespace ledMatrixD {
       for(int i = 0; i < this->scrolls; i++){
         this->scroll(this->scrollMS);
       }
+  }
+  /**
+   *
+   * class RandomSpriteDisplay
+   *
+   * shows an image from an random pick of all the
+   * images contained in the sprites directory.
+   *
+   */
+  RandomSpriteDisplay::RandomSpriteDisplay(){
+    //initialize instance variables
+    if(ini::get_int("TIMING", "sprite_dur", &(this->spriteDuration)) != 0){
+      this->undefinedMsg("TIMING", "sprite_dur");
+    }
+    if(ini::get_int("ITERATIONS", "random_times", &(this->times)) != 0){
+      this->undefinedMsg("ITERATIONS", "random_times");
+    }
+    char* sprite_dir = NULL;
+    if(ini::get_string("FILE SYSTEM", "sprite_dir", &(sprite_dir)) != 0){
+      this->undefinedMsg("FILE SYSTEM", "sprite_dir");
+    }
+    this->spritePath = sprite_dir;
+    //initialize the filename map that will be randomly selected for display
+    DIR* dir = opendir(this->getFullSpritePath().c_str());
+    dirent* dirFile = NULL;
+    if(dir == NULL){
+      EXIT_MSG("ini configuration sprite_dir does not exist or is not a directory");
+    }
+    int i = 0;
+    std::string suffix = ".ppm";
+    while((dirFile = readdir(dir)) != NULL){
+      if(dirFile->d_namlen >= suffix.size()){
+        std::string filename = dirFile->d_name;
+        if(filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) == 0){
+          //has the .ppm suffix check this just to be safe
+          fileMap[i] = filename;
+        }
+      }
+    }
+    closedir(dir);
+    //initialize random number generator and distribution
+    this->distribution = new intDist(0, fileMap.size());
+    this->distribution->reset();
+  }
+  void RandomSpriteDisplay::show(){
+    for(int i = 0; i < this->times; i++){
+      int randInt = this->distribution(generator);
+      std::string filename = fileMap[randInt];
+      this->loadImage(this->spritePath + filename);
+      this->draw(0);
+      this->wait(this->spriteDuration);
+    }
+  }
+  std::string RandomSpriteDisplay::getFullSpritePath(){
+    return this->getFilePath(this->spritePath);
   }
   /**
    *
