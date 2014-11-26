@@ -171,11 +171,16 @@ namespace ledMatrixD
     public:
       ConwaysDisplay();
       void show();
+    private:
+      int duration;
   };
   class URLDisplay : public Display {
     public:
       URLDisplay();
       void show();
+    private:
+      int scrolls;
+      int scrollMS;
   };
   class RandomSpriteDisplay : public Display {
     public:
@@ -186,6 +191,9 @@ namespace ledMatrixD
     public:
       TwitterDisplay();
       void show();
+    private:
+      int scrolls;
+      int scrollMS;
   };
   void initLongSequence();
   void runLongSequence();

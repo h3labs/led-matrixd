@@ -162,6 +162,65 @@ namespace ledMatrixD {
     return false;
   }
   /**
+   * 
+   * class ConwaysDisplay
+   *
+   * shows the game of life for a specific duration
+   *
+   */
+  ConwaysDisplay::ConwaysDisplay(){
+    if(ini::get_int("TIMING", "conway_dur", &(this->duration)) != 0){
+      this->undefinedMsg("TIMING", "conway_dur");
+    }
+  }
+  void ConwaysDisplay::show(){
+    GameLife* gameLife = new GameLife(canvas, 400, true);
+    gameLife->Start();
+    this->wait((unsigned int)this->duration)
+    delete gameLife;
+  }
+  /**
+   *
+   * class URLDisplay
+   *
+   * shows an image of an URL scrolled along the screen.
+   */
+  URLDisplay::URLDisplay(){
+    if(ini::get_int("TIMING", "scroll_ms", &(this->scrollMS)) != 0){
+      this->undefinedMsg("TIMING", "scroll_ms");
+    }
+    if(ini::get_int("ITERATIONS", "url_scroll", &(this->scrolls)) != 0){
+      this->undefinedMsg("ITERATIONS", "url_scroll");
+    }
+  }
+  void URLDisplay::show(){
+      this->loadImage("url.ppm");
+      for(int i = 0; i < this->scrolls; i++){
+        this->scroll(this->scrollMS);
+      }
+  }
+  /**
+   *
+   * class TwitterDisplay
+   *
+   * shows an image of an Twitter scrolled along the screen.
+   */
+  TwitterDisplay::TwitterDisplay(){
+    if(ini::get_int("TIMING", "scroll_ms", &(this->scrollMS)) != 0){
+      this->undefinedMsg("TIMING", "scroll_ms");
+    }
+    if(ini::get_int("ITERATIONS", "url_scroll", &(this->scrolls)) != 0){
+      this->undefinedMsg("ITERATIONS", "url_scroll");
+    }
+  }
+  void TwitterDisplay::show(){
+      this->loadImage("twitter.ppm");
+      for(int i = 0; i < this->scrolls; i++){
+        this->scroll(this->scrollMS);
+      }
+  }
+
+  /**
    * Functions
    */
   void initLongSequence(){
