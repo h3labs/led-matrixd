@@ -16,6 +16,7 @@ namespace ini {
     }  
     return item;
   }
+  //TODO: clean all uses of this or FREE
   int get_string(const char* section, const char* attribute, char** value){
     int error;
     struct ::collection_item* item = get_item(section, attribute);

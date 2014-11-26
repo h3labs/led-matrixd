@@ -25,7 +25,7 @@
 
 namespace ledMatrixD
 {
-  int pwm_bits = -1;
+  int pwm_bits = 10;
 	bool large_display = false;
 	int demo = -1;
 	int rows = 32;
@@ -267,21 +267,30 @@ int main(int argc, char* argv[])
 {
   //TODO: getopt
   int opt;
-  while ((opt = getopt(argc, argv, "C:D")) != -1) {
+  while ((opt = getopt(argc, argv, "C:D:")) != -1) {
     switch (opt) {
     case 'C':
       ini::ini_file = optarg;
       break;
     case 'D':
+      std::cout << "this happened D\n";
       sequence = atoi(optarg);
-      if( 0 <= sequence && sequence <= 1){
+      std::cout << "this happened D\n";
+      if( !(0 <= sequence && sequence <= 1)){
+        std::cout << "this happened N\n";
         usage("illegal value -D can only use 0 or 1");
         exit(EXIT_FAILURE);
       }
       break;
+    case '?':
+    default:
+      usage("");
+      exit(EXIT_FAILURE);
     }
   }
+  std::cout << "this happened1\n";
   ini::read_file(ini::ini_file);
+  std::cout << "this happened2\n";
   ledMatrixD::OpenCloseSign* openClose = NULL;
   switch(sequence){
     case 0:
