@@ -1,12 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/dir.h>
 #include "ini-reader.h"
+#include "graphics.h"
 #include "sign-long-sequence.h"
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 
 
@@ -122,6 +125,71 @@ namespace ledMatrixD {
         this->wait((unsigned int)this->frameDuration);
       }
     }
+  }
+  /**
+   * class DateDisplay
+   *
+   * displays a date for a specific amout of time
+   *
+   */
+  DateDisplay::DateDisplay(){
+    if(ini::get_int("DATE", "date_x", &(this->x)) != 0){
+      this->undefinedMsg("DATE", "date_x");
+    }
+    if(ini::get_int("DATE", "date_y", &(this->y)) != 0){
+      this->undefinedMsg("DATE", "date_y");
+    }
+    if(ini::get_int("DATE", "date_r", &(this->r)) != 0){
+      this->undefinedMsg("DATE", "date_r");
+    }
+    if(ini::get_int("DATE", "date_g", &(this->g)) != 0){
+      this->undefinedMsg("DATE", "date_g");
+    }
+    if(ini::get_int("DATE", "date_b", &(this->b)) != 0){
+      this->undefinedMsg("DATE", "b");
+    }
+    //TODO: free up character strings
+    //get format
+    char* format = NULL;
+    if(ini::get_string("DATE", "date_format", &(format)) != 0){
+      this->undefinedMsg("DATE", "date_format");
+    }
+    this->format = format;
+    //get font filename
+    char* fontFilename = NULL;
+    if(ini::get_string("DATE", "date_font", &(fontFilename)) != 0){
+      this->undefinedMsg("DATE", "date_font");
+    }
+    this->fontFilename = fontFilename;
+    if(!this->font.LoadFont(this->fontFilename.c_str())){
+      EXIT_MSG("ini config: could not load specified font file DATE > date_font");
+    }
+  }
+  void DateDisplay::show(){
+    char buf[100];
+    time_t rawtime;
+    struct tm * timeinfo;
+    rbg_matrix::Color color(this->r, this->g, this->b); 
+    time(&rawtime);
+    timeinfo = localtime (&rawtime);
+    //TODO: check and make sure format is correctly added here
+    strftime(buf, 100, this->format, timeinfo);
+    //draw the string in buf 
+    std::sstream timeStream(buf);
+    int cX = this->x;
+    int cY = this->y;
+    //TODO: check this functions work
+    while(!timeStream.eof()){
+      if((cY + this->font.height() ) > canvas->height())
+      std::string strLine = timeStream.getline();
+      if( strLine.size() == 0){
+        continue;
+      }
+      rgb_matrix::DrawText(canvas, this->font, cX, cY + this->font.baseline(), color);
+      cY += this->font.height();
+    }
+  }
+  DateDisplay::~DateDisplay(){
   }
   /**
    * class ShopStatusDisplay
@@ -252,6 +320,9 @@ namespace ledMatrixD {
       this->draw(0);
       this->wait(this->spriteDuration);
     }
+  }
+  RandomSpriteDisplay::~RandomSpriteDisplay(){
+    delete distribution;
   }
   std::string RandomSpriteDisplay::getFullSpritePath(){
     return this->getFilePath(this->spritePath);

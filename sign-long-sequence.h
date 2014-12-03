@@ -156,6 +156,16 @@ namespace ledMatrixD
     public:
       DateDisplay();
       void show();
+      ~DateDisplay();
+    private:
+      std::string format;
+      std::string fontFilename;
+      rgb_matrix::Font font;
+      int x;
+      int y;
+      int r;
+      int g;
+      int b;
   };
   class ShopStatusDisplay : public Display {
     public:
