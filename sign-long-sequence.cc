@@ -174,7 +174,7 @@ namespace ledMatrixD {
     time(&rawtime);
     timeinfo = localtime (&rawtime);
     //TODO: check and make sure format is correctly added here
-    strftime(buf, 100, this->format, timeinfo);
+    strftime(buf, 100, this->format.c_str(), timeinfo);
     //draw the string in buf 
     std::stringstream timeStream(buf);
     int cX = this->x;
@@ -182,7 +182,9 @@ namespace ledMatrixD {
     //TODO: check this functions work
     while(!timeStream.eof()){
       if((cY + this->font.height() ) > canvas->height())
-      std::string strLine = timeStream.getline();
+      char strLineBuf[256]; 
+      timeStream.getline(strLineBuf, 256);
+      std::string strLine(strLineBuf);
       if( strLine.size() == 0){
         continue;
       }

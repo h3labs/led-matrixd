@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <string>
 #include <iostream>
+#include <random>
 #include "led-matrixd-main.h"
 
 #define EXIT_MSG(m) {\
