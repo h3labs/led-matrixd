@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <random>
 
 
 
@@ -169,13 +170,13 @@ namespace ledMatrixD {
     char buf[100];
     time_t rawtime;
     struct tm * timeinfo;
-    rbg_matrix::Color color(this->r, this->g, this->b); 
+    rgb_matrix::Color color(this->r, this->g, this->b); 
     time(&rawtime);
     timeinfo = localtime (&rawtime);
     //TODO: check and make sure format is correctly added here
     strftime(buf, 100, this->format, timeinfo);
     //draw the string in buf 
-    std::sstream timeStream(buf);
+    std::stringstream timeStream(buf);
     int cX = this->x;
     int cY = this->y;
     //TODO: check this functions work
