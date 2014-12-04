@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <string>
 #include <iostream>
+#include <map>
+#include "graphics.h"
 #include "led-matrixd-main.h"
 
 #define EXIT_MSG(m) {\
