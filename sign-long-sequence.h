@@ -201,6 +201,7 @@ namespace ledMatrixD
       ~RandomSpriteDisplay();
     private:
       std::string getFullSpritePath();
+      std::string spritePath;
       int spriteDuration;
       int times;
       StringMap fileMap;
