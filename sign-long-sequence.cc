@@ -302,7 +302,7 @@ namespace ledMatrixD {
     int i = 0;
     std::string suffix = ".ppm";
     while((dirFile = readdir(dir)) != NULL){
-      int len = strlen(dirFile->d_name);
+      unsigned int len = strlen(dirFile->d_name);
       if(len >= suffix.size()){
         std::string filename = dirFile->d_name;
         if(filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) == 0){
