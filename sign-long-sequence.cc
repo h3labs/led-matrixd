@@ -168,6 +168,7 @@ namespace ledMatrixD {
   }
   void DateDisplay::show(){
     char buf[100];
+    char strLineBuf[256]; 
     time_t rawtime;
     struct tm * timeinfo;
     rgb_matrix::Color color(this->r, this->g, this->b); 
@@ -182,13 +183,12 @@ namespace ledMatrixD {
     //TODO: check this functions work
     while(!timeStream.eof()){
       if((cY + this->font.height() ) > canvas->height())
-      char strLineBuf[256]; 
       timeStream.getline(strLineBuf, 256);
       std::string strLine(strLineBuf);
       if( strLine.size() == 0){
         continue;
       }
-      rgb_matrix::DrawText(canvas, this->font, cX, cY + this->font.baseline(), color);
+      rgb_matrix::DrawText(canvas, this->font, cX, cY + this->font.baseline(), color, strLineBuf);
       cY += this->font.height();
     }
   }
@@ -249,7 +249,7 @@ namespace ledMatrixD {
   void ConwaysDisplay::show(){
     GameLife* gameLife = new GameLife(canvas, 400, true);
     gameLife->Start();
-    this->wait((unsigned int)this->duration)
+    this->wait((unsigned int)this->duration);
     delete gameLife;
   }
   /**
