@@ -312,12 +312,11 @@ namespace ledMatrixD {
     }
     closedir(dir);
     //initialize random number generator and distribution
-    this->distribution = new intDist(0, fileMap.size());
-    this->distribution->reset();
+    srand(fileMap.size());
   }
   void RandomSpriteDisplay::show(){
     for(int i = 0; i < this->times; i++){
-      int randInt = this->distribution(generator);
+      int randInt = rand();
       std::string filename = fileMap[randInt];
       this->loadImage(this->spritePath + filename);
       this->draw(0);
@@ -325,7 +324,6 @@ namespace ledMatrixD {
     }
   }
   RandomSpriteDisplay::~RandomSpriteDisplay(){
-    delete distribution;
   }
   std::string RandomSpriteDisplay::getFullSpritePath(){
     return this->getFilePath(this->spritePath);
