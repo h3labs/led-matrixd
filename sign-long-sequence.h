@@ -195,7 +195,6 @@ namespace ledMatrixD
   };
   class RandomSpriteDisplay : public Display {
     typedef std::map<int, std::string> StringMap;
-    typedef std::uniform_int_distribution<int> intDist;
     public:
       RandomSpriteDisplay();
       void show();
@@ -205,7 +204,6 @@ namespace ledMatrixD
       int spriteDuration;
       int times;
       StringMap fileMap;
-      std::default_random_engine generator;
       intDist* distribution;
   };
   class TwitterDisplay : public Display {
