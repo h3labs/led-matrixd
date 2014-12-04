@@ -4,14 +4,14 @@
 // This code is public domain
 // (but note, that the led-matrix library this depends on is GPL v2)
 
-#include "led-matrix.h"
-#include "graphics.h"
-
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include "led-matrix.h"
+#include "graphics.h"
 
 using namespace rgb_matrix;
 
