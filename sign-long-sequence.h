@@ -204,7 +204,6 @@ namespace ledMatrixD
       int spriteDuration;
       int times;
       StringMap fileMap;
-      intDist* distribution;
   };
   class TwitterDisplay : public Display {
     public:
