@@ -27,7 +27,9 @@ namespace ledMatrixD
       void wait(unsigned int msecs_){
         unsigned int msecs = (msecs_ * 1000) % 1000000;
         unsigned int secs = (msecs_ * 1000) / 1000000;
+#ifdef DEBUG
         std::cout << "Sleeping: " << secs << "s " << msecs << "us" << std::endl;
+#endif
         sleep(secs);
         usleep((useconds_t)msecs);
       }
@@ -79,14 +81,17 @@ namespace ledMatrixD
         const size_t pixel_count = new_width * new_height;
         Pixel *new_image = new Pixel [ pixel_count ];
         assert(sizeof(Pixel) == 3);   // we make that assumption.
+        std::cout << "Reading image \"" << filename << "\" with " << pixel_count << " pixels" << std::endl;
         if (fread(new_image, sizeof(Pixel), pixel_count, f) != pixel_count) {
           line = "";
           EXIT_WITH_MSG("Not enough pixels read.");
         }
 #undef EXIT_WITH_MSG
         fclose(f);
+#ifdef DEBUG
         fprintf(stderr, "Read image '%s' with %dx%d\n", filename.c_str(),
             new_width, new_height);
+#endif
         current_image_.Delete();  // in case we reload faster than is picked up
         current_image_.image = new_image;
         current_image_.width = new_width;
@@ -162,7 +167,9 @@ namespace ledMatrixD
     private:
       std::string format;
       std::string fontFilename;
+      std::string fontDir;
       rgb_matrix::Font font;
+      int dateDur;
       int x;
       int y;
       int r;

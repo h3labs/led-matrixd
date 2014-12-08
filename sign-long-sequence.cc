@@ -3,6 +3,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/dir.h>
+#include <sys/time.h>
 #include "ini-reader.h"
 #include "graphics.h"
 #include "sign-long-sequence.h"
@@ -10,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 
 
@@ -133,6 +135,9 @@ namespace ledMatrixD {
    *
    */
   DateDisplay::DateDisplay(){
+    if(ini::get_int("TIMING", "date_dur", &(this->dateDur)) != 0){
+      this->undefinedMsg("TIMING", "date_dur");
+    }
     if(ini::get_int("DATE", "date_x", &(this->x)) != 0){
       this->undefinedMsg("DATE", "date_x");
     }
@@ -149,25 +154,34 @@ namespace ledMatrixD {
       this->undefinedMsg("DATE", "b");
     }
     //TODO: free up character strings
+    char* fontDir = NULL;
+    if(ini::get_string("FILE SYSTEM", "font_dir", &(fontDir)) != 0){
+      this->undefinedMsg("FILE SYSTEM", "font_dir");
+    }
+    this->fontDir = fontDir;
     //get format
     char* format = NULL;
     if(ini::get_string("DATE", "date_format", &(format)) != 0){
       this->undefinedMsg("DATE", "date_format");
     }
     this->format = format;
+    if(this->format[0] != '"' || this->format[this->format.size()-1] != '"'){
+      EXIT_MSG("ini config: date_format must be a string sorrounded by \" marks ");
+    }else{
+      this->format = this->format.substr(1, this->format.size()-2);
+    }
     //get font filename
     char* fontFilename = NULL;
     if(ini::get_string("DATE", "date_font", &(fontFilename)) != 0){
       this->undefinedMsg("DATE", "date_font");
     }
     this->fontFilename = fontFilename;
-    if(!this->font.LoadFont(this->fontFilename.c_str())){
+    if(!this->font.LoadFont((this->fontDir + this->fontFilename).c_str())){
       EXIT_MSG("ini config: could not load specified font file DATE > date_font");
     }
   }
   void DateDisplay::show(){
     char buf[100];
-    char strLineBuf[256]; 
     time_t rawtime;
     struct tm * timeinfo;
     rgb_matrix::Color color(this->r, this->g, this->b); 
@@ -176,20 +190,61 @@ namespace ledMatrixD {
     //TODO: check and make sure format is correctly added here
     strftime(buf, 100, this->format.c_str(), timeinfo);
     //draw the string in buf 
-    std::stringstream timeStream(buf);
+#ifdef DEBUG
+    std::cout << "time is \"" << buf << "\" using format " << this->format.c_str() << std::endl;
+#endif
+    std::string timeStr = buf;
+#ifdef DEBUG
+    std::cout << "outputing " << timeStr << std::endl;
+#endif
     int cX = this->x;
     int cY = this->y;
     //TODO: check this functions work
-    while(!timeStream.eof()){
-      if((cY + this->font.height() ) > canvas->height())
-      timeStream.getline(strLineBuf, 256);
-      std::string strLine(strLineBuf);
-      if( strLine.size() == 0){
-        continue;
+    canvas->Clear();
+    while(true){
+      if((cY + this->font.height() ) > canvas->height()){
+#ifdef DEBUG
+        std::cout << "breaking because canvas is too small" << std::endl;
+#endif
+        break;
       }
-      rgb_matrix::DrawText(canvas, this->font, cX, cY + this->font.baseline(), color, strLineBuf);
+      if( timeStr.size() == 0){
+#ifdef DEBUG
+        std::cout << "time does not contain anything" << std::endl;
+#endif
+        break;
+      }
+      std::string strLine;
+      for(unsigned int i = 0; i < timeStr.size(); i++){
+        if(timeStr[i] == '\n'){
+          if( (i+1) >= timeStr.size()){
+            strLine = timeStr.substr(0, i);
+            timeStr = "";
+          }else{
+            strLine = timeStr.substr(0, i);
+            timeStr = timeStr.substr(i+1);
+          }
+          break;
+        }
+        if( i >= (timeStr.size() - 1)){
+          strLine = timeStr;
+          timeStr = "";
+          break;
+        }
+      }
+#ifdef DEBUG
+      std::cout << "writing line \"" << strLine << "\"" << std::endl;
+#endif
+      if( strLine.size() == 0){
+#ifdef DEBUG
+        std::cout << "line does not contain anything" << std::endl;
+#endif
+        break;
+      }
+      rgb_matrix::DrawText(canvas, this->font, cX, cY + this->font.baseline(), color, strLine.c_str());
       cY += this->font.height();
     }
+    this->wait(dateDur);
   }
   DateDisplay::~DateDisplay(){
   }
@@ -298,9 +353,11 @@ namespace ledMatrixD {
     if(dir == NULL){
       EXIT_MSG("ini configuration sprite_dir does not exist or is not a directory");
     }
+    std::cout << "Reading Directory \"" << this->getFullSpritePath() << "\"" << std::endl;
     int i = 0;
     std::string suffix = ".ppm";
     while((dirFile = readdir(dir)) != NULL){
+      std::cout << "adding file \"" << dirFile->d_name << "\"" << std::endl;
       unsigned int len = strlen(dirFile->d_name);
       if(len >= suffix.size()){
         std::string filename = dirFile->d_name;
@@ -312,11 +369,13 @@ namespace ledMatrixD {
     }
     closedir(dir);
     //initialize random number generator and distribution
-    srand(fileMap.size());
+    time_t t;
+    unsigned int seed = (unsigned int)time(&t);
+    srand((unsigned int)t);
   }
   void RandomSpriteDisplay::show(){
     for(int i = 0; i < this->times; i++){
-      int randInt = rand();
+      int randInt = rand() % fileMap.size();
       std::string filename = fileMap[randInt];
       this->loadImage(this->spritePath + filename);
       this->draw(0);
@@ -369,15 +428,40 @@ namespace ledMatrixD {
   }
   void runLongSequence(){
     initLongSequence();
+    Display* displays[] = {
+      new DateDisplay(),
+      new TitleDisplay(),
+      new LogoDisplay(0),
+      new SpinLogoDisplay(),
+      new LogoDisplay(1),
+      new ShopStatusDisplay(),
+      new RandomSpriteDisplay(),
+      new ConwaysDisplay(),
+      new URLDisplay(),
+      new TwitterDisplay()
+    };
+    std::vector<Display*> displaysVector(displays, displays + (sizeof(displays) / sizeof(Display*)));
+    for(std::vector<Display*>::iterator it = displaysVector.begin(); it != displaysVector.end();){
+      std::cout << "Drawing new display" << std::endl;
+      (*it)->show();
+      if((*it) == displaysVector.back())
+        it = displaysVector.begin();
+      else
+        ++it;
+    }
+    /*
     TitleDisplay* titleDisplay = new TitleDisplay();
     LogoDisplay* logoDisplayPre = new LogoDisplay(0);
     SpinLogoDisplay* spinLogoDisplay = new SpinLogoDisplay();
     LogoDisplay* logoDisplayPost = new LogoDisplay(1);
     ShopStatusDisplay* shopStatusDisplay = new ShopStatusDisplay();
+    RandomSpriteDisplay* randomSpriteDisplay = new RandomSpriteDisplay();
     titleDisplay->show();
     logoDisplayPre->show();
     spinLogoDisplay->show();
     logoDisplayPost->show();
     shopStatusDisplay->show();
+    randomSpriteDisplay->show();
+    */
   }
 }
