@@ -7,7 +7,7 @@ namespace ledMatrixD {
       perror("inotify_init1");
       exit(EXIT_FAILURE);
     }
-    this->notifierFunction = &FileCreatedStatusObserver;
+    this->notifierFunction = &(this->FileCreatedStatusObserver);
   }
   int FileCreatedStatusObserver::registerForNotifications(std::string dirName, std::string fileName, FileStatusNotifee* notifee)
   {
