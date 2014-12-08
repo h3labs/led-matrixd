@@ -9,6 +9,8 @@
 #include <fstream>
 #include <map>
 
+#include "led-matrixd-main.h"
+
 namespace ledMatrixD {
 
   class FileStatusNotifee {

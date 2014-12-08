@@ -6,17 +6,18 @@
 
 #include "file-status-notification.h"
 
-class OpenCloseSign : public FileStatusNotifee { 
-  rgb_matrix::Canvas* canvas;
-  rgb_matrix::ThreadedCanvasManipulator* image_gen;
-  FileCreatedStatusObserver* observer;
-  std::string isOpenFileName;
-  bool isOpen;
-  public:
+namespace ledMatrixD {
+  class OpenCloseSign : public FileStatusNotifee { 
+    rgb_matrix::Canvas* canvas;
+    rgb_matrix::ThreadedCanvasManipulator* image_gen;
+    FileCreatedStatusObserver* observer;
+    std::string isOpenFileName;
+    bool isOpen;
+    public:
     OpenCloseSign();
     void run();
     void notify(std::string fileName, int event);
-  private:
+    private:
     void showSign(bool first, bool newIsOpen)
     {
       if(!first){
@@ -52,5 +53,5 @@ class OpenCloseSign : public FileStatusNotifee {
         this->image_gen->Start();
       }
     } 
-};
-
+  };
+}
