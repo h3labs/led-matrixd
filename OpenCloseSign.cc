@@ -65,7 +65,7 @@ namespace ledMatrixD {
       }
     }
   } 
-  private:
+
   void showSign(bool first, bool newIsOpen)
   {
     if(!first){
