@@ -18,9 +18,12 @@ $(RGB_LIBRARY):
 led-matrixd : led-matrixd-main.o sign-long-sequence.o ini-reader.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) $^  -o $@ $(LDFLAGS)
 
-led-matrixd-main.o: sign-long-sequence.o ini-reader.o
+led-matrixd-main.o: sign-long-sequence.o ini-reader.o OpenCloseMatrix.o
+
+OpenCloseMatrix.o: file-status-notification.o
 
 sign-long-sequence.o: ini-reader.o
+
 
 led-matrix : demo-main.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) demo-main.o -o $@ $(LDFLAGS)
