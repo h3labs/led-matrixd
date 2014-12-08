@@ -18,16 +18,20 @@ namespace ledMatrixD {
       virtual void notify(std::string fileName, int event) = 0;
   };
 
+
   class FileCreatedStatusObserver { 
     typedef std::map<int, FileStatusNotifee*> fileNotificationMap; 
+    typedef void (FileCreatedStatusObserver::*NotifierFunction)(std::string, int);
     int fd;	
     private:
     fileNotificationMap notificationMap;	
+    NotifierFunction notifierFunction;
     public:
     FileCreatedStatusObserver();
     int registerForNotifications(std::string dirName, std::string fileName, FileStatusNotifee* notifee);
     void observe();
     void notifyOfIEvents();
+    void notifyRegistered(std::string fileName, int);
     private:
     inline bool checkFileExists(std::string fileName) 	
     {
