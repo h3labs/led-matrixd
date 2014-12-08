@@ -66,7 +66,7 @@ namespace ledMatrixD {
     }
   } 
 
-  void showSign(bool first, bool newIsOpen)
+  void OpenCloseSign::showSign(bool first, bool newIsOpen)
   {
     if(!first){
       if(newIsOpen != this->isOpen){
