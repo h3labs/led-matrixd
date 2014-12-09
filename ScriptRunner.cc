@@ -99,8 +99,10 @@ namespace ledMatrixD {
       //call update script
       int res = 0;
       if(this->open){
+        std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
         res = execl(this->shopStatusUpdateScriptFilename, "open", NULL);
       }else{
+        std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
         res = execl(this->shopStatusUpdateScriptFilename, "close", NULL);
       }
       if(res < 0){
@@ -109,7 +111,7 @@ namespace ledMatrixD {
       }
     }
     if(this->terminate){
-      pthread_exit(NULL);
+      exit(0);
     }
   }
   ScriptRunner::~ScriptRunner(){

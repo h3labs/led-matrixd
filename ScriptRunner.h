@@ -1,5 +1,8 @@
 #include <pthread.h>
 
+#ifndef __SCRIPT_RUNNER_H__
+#define __SCRIPT_RUNNER_H__
+
 namespace ledMatrixD {
   class ScriptRunner : public FileStatusNotifee {
       ScriptRunner();
@@ -17,3 +20,5 @@ namespace ledMatrixD {
       pthread_t runner;
   }
 }
+
+#endif

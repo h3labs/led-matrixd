@@ -4,6 +4,9 @@ extern "C" {
 	#include "ini_config.h"
 }
 
+#ifndef __INI_READER_H__
+#define __INI_READER_H__
+
 namespace ini { 
   char* ini_file = "matrix.ini";
   struct ::collection_item* ini_config = NULL;
@@ -71,3 +74,4 @@ namespace ini {
     print_ini_variables();
 	}
 }
+#endif

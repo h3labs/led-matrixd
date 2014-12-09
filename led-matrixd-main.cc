@@ -81,13 +81,16 @@ int main(int argc, char* argv[])
   ini::read_file(ini::ini_file);
   std::cout << "this happened2\n";
   ledMatrixD::OpenCloseSign* openClose = NULL;
+  ledMatrixD::ScriptRunner* scriptRunner = NULL;
   switch(sequence){
     case 0:
       openClose = new ledMatrixD::OpenCloseSign();
       openClose->run();
       break;
     case 1:
+      scriptRunner->run();
       ledMatrixD::runLongSequence();
+      scriptRunner->stop();
       break;
   }
 	return 0;

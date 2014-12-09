@@ -7,6 +7,7 @@
 #include "ini-reader.h"
 #include "graphics.h"
 #include "sign-long-sequence.h"
+#include "ScriptRunner.h"
 
 #include <iostream>
 #include <fstream>
