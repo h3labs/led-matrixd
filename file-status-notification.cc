@@ -78,4 +78,7 @@ namespace ledMatrixD {
     else if(event->mask & IN_DELETE)
       notifee->notify(fileName, 3);
   }
+  void notifyRegistered(std::string fileName, int)
+  {
+  }
 }
