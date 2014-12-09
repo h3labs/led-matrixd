@@ -31,7 +31,6 @@ namespace ledMatrixD {
     int registerForNotifications(std::string dirName, std::string fileName, FileStatusNotifee* notifee);
     void observe();
     void notifyOfIEvents();
-    void notifyRegistered(std::string fileName, int);
     private:
     inline bool checkFileExists(std::string fileName) 	
     {
