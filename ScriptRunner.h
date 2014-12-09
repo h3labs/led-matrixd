@@ -1,7 +1,9 @@
-#include <pthread.h>
 
 #ifndef __SCRIPT_RUNNER_H__
 #define __SCRIPT_RUNNER_H__
+
+#include "file-status-notification.h"
+#include <pthread.h>
 
 namespace ledMatrixD {
   class ScriptRunner : public FileStatusNotifee {
