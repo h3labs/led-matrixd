@@ -1,4 +1,7 @@
 
+#ifndef __FILE_STATUS_NOTIFICATION_H__
+#define __FILE_STATUS_NOTIFICATION_H__
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -44,3 +47,4 @@ namespace ledMatrixD {
     }
   };
 }
+#endif

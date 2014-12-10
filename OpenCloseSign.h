@@ -1,3 +1,5 @@
+#ifndef __OPEN_CLOSE_SIGN_H__
+#define __OPEN_CLOSE_SIGN_H__
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -22,3 +24,4 @@ namespace ledMatrixD {
     void showSign(bool first, bool newIsOpen);
   };
 }
+#endif
