@@ -15,12 +15,14 @@ all : $(BINARIES)
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
 
-led-matrixd : led-matrixd-main.o OpenCloseSign.o file-status-notification.o sign-long-sequence.o ini-reader.o $(RGB_LIBRARY)
+led-matrixd : led-matrixd-main.o OpenCloseSign.o ScriptRunner.o file-status-notification.o sign-long-sequence.o ini-reader.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) $^  -o $@ $(LDFLAGS)
 
 led-matrixd-main.o: sign-long-sequence.o ini-reader.o OpenCloseSign.o
 
 OpenCloseSign.o: file-status-notification.o
+
+ScriptRunner.o: file-status-notification.o
 
 sign-long-sequence.o: ini-reader.o
 
