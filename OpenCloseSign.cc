@@ -1,7 +1,5 @@
 #include "OpenCloseSign.h"
 
-#ifndef __OPEN_CLOSE_SIGN_H__
-#define __OPEN_CLOSE_SIGN_H__
 
 namespace ledMatrixD {
   OpenCloseSign::OpenCloseSign() : canvas(NULL), image_gen(NULL) {
@@ -106,4 +104,3 @@ namespace ledMatrixD {
   } 
 }
 
-#endif
