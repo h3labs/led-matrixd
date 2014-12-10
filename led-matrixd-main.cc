@@ -89,7 +89,10 @@ int main(int argc, char* argv[])
       openClose->run();
       break;
     case 1:
+    std::cout << "this happened2\n";
+      scriptRunner = new ledMatrixD::ScriptRunner();
       scriptRunner->run();
+    std::cout << "this happened2\n";
       ledMatrixD::runLongSequence();
       scriptRunner->stop();
       break;
