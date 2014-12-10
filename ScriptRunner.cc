@@ -10,14 +10,14 @@
 
 namespace ledMatrixD {
   std::string basename(std::string path){
-    int lastSeparatorIndex = path.rfind("/");
+    unsigned int lastSeparatorIndex = path.rfind("/");
     if(lastSeparatorIndex != std::string::npos){
       return path.substr(lastSeparatorIndex);
     }
     return std::string("");
   }
   std::string path(std::string path){
-    int lastSeparatorIndex = path.rfind("/");
+    unsigned int lastSeparatorIndex = path.rfind("/");
     if(lastSeparatorIndex != std::string::npos){
       return path.substr(0, lastSeparatorIndex+1);
     }
@@ -57,7 +57,7 @@ namespace ledMatrixD {
           ledMatrixD::basename(this->shopStatusFilename), 
           this
         );
-        this->observer->observer();
+        this->observer->observe();
         munmap(this->terminate, sizeof(bool));
         pid = id;
       }else{
