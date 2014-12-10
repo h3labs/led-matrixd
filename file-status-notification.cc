@@ -10,6 +10,7 @@ namespace ledMatrixD {
   }
   int FileCreatedStatusObserver::registerForNotifications(std::string dirName, std::string fileName, FileStatusNotifee* notifee)
   {
+    std::cout << "Registering to listen {" << dirName << ", " << fileName << "}" << std::endl; 
     int ifd = inotify_add_watch(this->fd, dirName.c_str(), IN_CREATE | IN_DELETE);
     if (ifd == -1) {
       perror("inotify_add_watch");

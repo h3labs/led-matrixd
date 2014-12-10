@@ -100,10 +100,10 @@ namespace ledMatrixD {
       int res = 0;
       if(this->open){
         std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
-        res = execl(this->shopStatusUpdateScriptFilename, "open", NULL);
+        res = execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
       }else{
         std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
-        res = execl(this->shopStatusUpdateScriptFilename, "close", NULL);
+        res = execl(this->shopStatusUpdateScriptFilename.c_str(), "close", NULL);
       }
       if(res < 0){
         perror("execl() failed");
