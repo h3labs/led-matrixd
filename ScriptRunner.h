@@ -10,12 +10,13 @@
 
 namespace ledMatrixD {
   class ScriptRunner : public FileStatusNotifee {
+    public:
       ScriptRunner();
       pid_t run();
       void stop();
       void notify(std::string fileName, int event);
       ~ScriptRunner();
-    private
+    private:
       std::string shopStatusFilename;
       std::string shopStatusUpdateScriptFilename;
       FileCreatedStatusObserver* observer;
@@ -23,7 +24,7 @@ namespace ledMatrixD {
       bool open;
       pid_t pid;
       pthread_t runner;
-  }
+  };
 }
 
 #endif
