@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "file-status-notification.h"
 
 namespace ledMatrixD {
