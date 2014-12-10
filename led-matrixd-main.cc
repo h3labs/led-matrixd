@@ -22,6 +22,7 @@
 #include <utility>	
 
 #include "OpenCloseSign.h"
+#include "ScriptRunner.h"
 
 
 namespace ledMatrixD
