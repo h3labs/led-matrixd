@@ -19,7 +19,8 @@ namespace ledMatrixD {
       exit(EXIT_FAILURE);
     }
     notificationMap.insert(std::make_pair(ifd, notifee));	
-    if(checkFileExists(fileName)){
+    std::string fullPathFilename = dirName + "/" + fileName;
+    if(checkFileExists(fullPathFilename)){
       notifee->notify(fileName, 1);		
     }else{
       notifee->notify(fileName, 0);
@@ -32,7 +33,7 @@ namespace ledMatrixD {
     int fd_set_size = this->fd + 1;
     while(true){
       int num_fds = 0;
-      printf("waiting for events to happen in signcfg/ directory\n");
+      printf("waiting for events to happen in input dir directory\n");
       FD_ZERO(&ifs);
       FD_SET(fd, &ifs);
       num_fds = select(fd_set_size, &ifs, NULL, NULL, NULL);

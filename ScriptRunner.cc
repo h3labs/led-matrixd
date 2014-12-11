@@ -81,7 +81,7 @@ namespace ledMatrixD {
   void ScriptRunner::notify(std::string fileName, int event){
     std::cout << "got notification for file: " << fileName << " with event[" << event << "]" << std::endl;
     //call the script and update website
-    if(!fileName.compare(this->shopStatusFilename)){
+    if(!fileName.compare(ledMatrixD::basename(this->shopStatusFilename))){
       switch(event){
         case 0:
           this->open = false;
