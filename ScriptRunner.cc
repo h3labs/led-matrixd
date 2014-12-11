@@ -60,6 +60,7 @@ namespace ledMatrixD {
           ledMatrixD::basename(this->shopStatusFilename), 
           this
         );
+        std::cout << "child process running2" << std::endl;
         this->observer->observe();
         munmap(this->terminate, sizeof(bool));
         pid = id;
@@ -114,9 +115,12 @@ namespace ledMatrixD {
         exit(EXIT_FAILURE);
       }
     }
+    std::cout << "hey" << std::end;
+    /*
     if(this->terminate){
       exit(0);
     }
+    */
   }
   ScriptRunner::~ScriptRunner(){
   }
