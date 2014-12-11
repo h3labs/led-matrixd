@@ -115,7 +115,7 @@ namespace ledMatrixD {
         exit(EXIT_FAILURE);
       }
     }
-    std::cout << "hey" << std::end;
+    std::cout << "hey" << std::endl;
     /*
     if(this->terminate){
       exit(0);
