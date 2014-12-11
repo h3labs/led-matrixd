@@ -427,6 +427,10 @@ namespace ledMatrixD {
       fprintf(stderr, "IO could not initialized\n");
       exit(EXIT_FAILURE);
     }
+    std::cout << "rows=" << rows << std::endl;
+    std::cout << "chain=" << chain << std::endl;
+    std::cout << "do_luminance_correct=" << do_luminance_correct << std::endl;
+    std::cout << "pwm_bits=" << pwm_bits << std::endl;
     rgb_matrix::RGBMatrix *matrix = new rgb_matrix::RGBMatrix(&io, rows, chain);
     matrix->set_luminance_correct(do_luminance_correct);
     if (pwm_bits >= 0 && !matrix->SetPWMBits(pwm_bits)) {
