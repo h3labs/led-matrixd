@@ -115,12 +115,14 @@ namespace ledMatrixD {
         exit(EXIT_FAILURE);
       }
     }
-    std::cout << "hey" << std::endl;
+    std::cout << "checking whether to terminate" << std::endl;
     /*
-    if(this->terminate){
+    if(*this->terminate){
+      std::cout << "terminate" << std::endl;
       exit(0);
     }
     */
+    std::cout << "don't terminate" << std::endl;
   }
   ScriptRunner::~ScriptRunner(){
   }
