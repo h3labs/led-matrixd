@@ -12,7 +12,7 @@ namespace ledMatrixD {
   std::string basename(std::string path){
     unsigned int lastSeparatorIndex = path.rfind("/");
     if(lastSeparatorIndex != std::string::npos){
-      return path.substr(lastSeparatorIndex);
+      return path.substr(lastSeparatorIndex+1);
     }
     return std::string("");
   }
@@ -27,6 +27,7 @@ namespace ledMatrixD {
   ScriptRunner::ScriptRunner(){
     this->observer = new FileCreatedStatusObserver();
     //get string for location of beacon file
+    std::cout << "this happened3\n";
     char* shopStatusFilename = NULL;
     if(ini::get_string("FILE SYSTEM", "shop_status_flag", &shopStatusFilename) != 0){
       printf("ini config: could not find variable FILE SYSTEM > shop_status_flag");
@@ -34,11 +35,13 @@ namespace ledMatrixD {
     }
     this->shopStatusFilename = std::string(shopStatusFilename);
     //get string for location of script file
+    std::cout << "this happened4\n";
     char* shopStatusUpdateScriptFilename = NULL;
     if(ini::get_string("FILE SYSTEM", "shop_status_update_script", &shopStatusUpdateScriptFilename) != 0){
       printf("ini config: could not find variable FILE SYSTEM > shop_status_update_script");
       exit(EXIT_FAILURE);
     }
+    std::cout << "this happened4\n";
     this->shopStatusUpdateScriptFilename = std::string(shopStatusUpdateScriptFilename);
   }
   int ScriptRunner::run(){
