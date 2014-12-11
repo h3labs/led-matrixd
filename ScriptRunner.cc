@@ -25,7 +25,6 @@ namespace ledMatrixD {
   }
 
   ScriptRunner::ScriptRunner(){
-    this->observer = new FileCreatedStatusObserver();
     //get string for location of beacon file
     std::cout << "this happened3\n";
     char* shopStatusFilename = NULL;
@@ -55,6 +54,7 @@ namespace ledMatrixD {
     if(id >= 0){
       if(id == 0){
         std::cout << "child process running" << std::endl;
+        this->observer = new FileCreatedStatusObserver();
         this->observer->registerForNotifications(
           ledMatrixD::path(this->shopStatusFilename), 
           ledMatrixD::basename(this->shopStatusFilename), 
@@ -101,12 +101,13 @@ namespace ledMatrixD {
       }
       //call update script
       int res = 0;
+      std::cout << "running script > " << std::endl;
       if(this->open){
         std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
-        res = execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
+        //res = execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
       }else{
         std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
-        res = execl(this->shopStatusUpdateScriptFilename.c_str(), "close", NULL);
+        //res = execl(this->shopStatusUpdateScriptFilename.c_str(), "close", NULL);
       }
       if(res < 0){
         perror("execl() failed");
