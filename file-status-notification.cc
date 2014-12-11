@@ -35,7 +35,8 @@ namespace ledMatrixD {
       int num_fds = 0;
       printf("waiting for events to happen in input dir directory\n");
       FD_ZERO(&ifs);
-      FD_SET(fd, &ifs);
+      FD_SET(this->fd, &ifs);
+      std::cout << "fd " << this->fd << std::endl;
       num_fds = select(fd_set_size, &ifs, NULL, NULL, NULL);
       printf("got num_fds=%d\n", num_fds);
       if (num_fds == -1){

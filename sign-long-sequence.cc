@@ -44,6 +44,7 @@ namespace ledMatrixD {
     }
   }
   void TitleDisplay::show(){
+    std::cout << "Showing Title" << std::endl;
     std::string titleFilename = "title_card.ppm";
     std::string fullTitleFilename = this->getFilePath(titleFilename);
     if(!this->LoadPPM(fullTitleFilename)){
@@ -90,6 +91,7 @@ namespace ledMatrixD {
     //TODO: free atom dir
   }
   void LogoDisplay::show(){
+    std::cout << "Showing Logo" << std::endl;
     std::cout << "Logo: duration[" << this->duration << "]" << std::endl;
     this->loadImage(this->atomPath + "mf000.ppm");
     this->draw(0);
@@ -118,6 +120,7 @@ namespace ledMatrixD {
     //TODO: free atom dir
   }
   void SpinLogoDisplay::show(){
+    std::cout << "Showing Spin Logo" << std::endl;
     for(int j = 0; j < this->atomSpin; j++){
       for(int i = 0; i < 24; i++){
         char buf[40];
@@ -182,6 +185,7 @@ namespace ledMatrixD {
     }
   }
   void DateDisplay::show(){
+    std::cout << "Showing Date" << std::endl;
     char buf[100];
     time_t rawtime;
     struct tm * timeinfo;
@@ -271,6 +275,7 @@ namespace ledMatrixD {
     //TODO: free beacon filename
   }
   void ShopStatusDisplay::show(){
+    std::cout << "Showing Shop Status" << std::endl;
     for(int i = 0; i < this->scrolls; i++){
       if(this->beaconExists()){
         this->loadImage("open.ppm");
@@ -302,6 +307,7 @@ namespace ledMatrixD {
     }
   }
   void ConwaysDisplay::show(){
+    std::cout << "Showing Game of Life" << std::endl;
     GameLife* gameLife = new GameLife(canvas, 400, true);
     gameLife->Start();
     this->wait((unsigned int)this->duration);
@@ -322,6 +328,7 @@ namespace ledMatrixD {
     }
   }
   void URLDisplay::show(){
+      std::cout << "Showing URL" << std::endl;
       this->loadImage("url.ppm");
       for(int i = 0; i < this->scrolls; i++){
         this->scroll(this->scrollMS);
@@ -375,6 +382,7 @@ namespace ledMatrixD {
     srand((unsigned int)t);
   }
   void RandomSpriteDisplay::show(){
+    std::cout << "Showing Random Sprite" << std::endl;
     for(int i = 0; i < this->times; i++){
       int randInt = rand() % fileMap.size();
       std::string filename = fileMap[randInt];
@@ -403,6 +411,7 @@ namespace ledMatrixD {
     }
   }
   void TwitterDisplay::show(){
+      std::cout << "Showing Twitter" << std::endl;
       this->loadImage("twitter.ppm");
       for(int i = 0; i < this->scrolls; i++){
         this->scroll(this->scrollMS);
