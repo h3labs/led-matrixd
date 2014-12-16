@@ -114,6 +114,7 @@ namespace ledMatrixD {
 
         }else{
           std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
+          execl(this->shopStatusUpdateScriptFilename.c_str(), "closed", NULL);
           exit(EXIT_FAILURE);
         }
       }
@@ -129,12 +130,10 @@ namespace ledMatrixD {
       }
     }
     std::cout << "(parent) checking whether to terminate" << std::endl;
-    /*
     if(*this->terminate){
       std::cout << "terminate" << std::endl;
       exit(0);
     }
-    */
     std::cout << "(parent) did not termonate" << std::endl;
   }
   ScriptRunner::~ScriptRunner(){
