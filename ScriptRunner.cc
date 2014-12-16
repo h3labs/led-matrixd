@@ -28,7 +28,6 @@ namespace ledMatrixD {
 
   ScriptRunner::ScriptRunner(){
     //get string for location of beacon file
-    std::cout << "this happened3\n";
     char* shopStatusFilename = NULL;
     if(ini::get_string("FILE SYSTEM", "shop_status_flag", &shopStatusFilename) != 0){
       printf("ini config: could not find variable FILE SYSTEM > shop_status_flag");
@@ -36,13 +35,11 @@ namespace ledMatrixD {
     }
     this->shopStatusFilename = std::string(shopStatusFilename);
     //get string for location of script file
-    std::cout << "this happened4\n";
     char* shopStatusUpdateScriptFilename = NULL;
     if(ini::get_string("FILE SYSTEM", "shop_status_update_script", &shopStatusUpdateScriptFilename) != 0){
       printf("ini config: could not find variable FILE SYSTEM > shop_status_update_script");
       exit(EXIT_FAILURE);
     }
-    std::cout << "this happened4\n";
     this->shopStatusUpdateScriptFilename = std::string(shopStatusUpdateScriptFilename);
   }
   int ScriptRunner::run(){
@@ -55,19 +52,18 @@ namespace ledMatrixD {
     pid_t id = fork();
     if(id >= 0){
       if(id == 0){
-        std::cout << "child process running" << std::endl;
+        std::cout << "(parent) Script runner process started" << std::endl;
         this->observer = new FileCreatedStatusObserver();
         this->observer->registerForNotifications(
           ledMatrixD::path(this->shopStatusFilename), 
           ledMatrixD::basename(this->shopStatusFilename), 
           this
         );
-        std::cout << "child process running2" << std::endl;
         this->observer->observe();
         munmap(this->terminate, sizeof(bool));
         pid = id;
       }else{
-        std::cout << "parent process running" << std::endl;
+        std::cout << "(root) process running" << std::endl;
         pid = id;
       }
     }else{
@@ -106,14 +102,14 @@ namespace ledMatrixD {
       pid_t pid;
       pid = fork ();
       if(pid == 0){
-        std::cout << "running script > " << std::endl;
+        std::cout << "(child) running script" << std::endl;
         if(this->open){
-          std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
+          std::cout << "(child) ." << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
           execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
           exit(EXIT_FAILURE);
 
         }else{
-          std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
+          std::cout << "(child)." << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
           execl(this->shopStatusUpdateScriptFilename.c_str(), "closed", NULL);
           exit(EXIT_FAILURE);
         }
