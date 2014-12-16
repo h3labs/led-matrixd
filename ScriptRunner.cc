@@ -131,6 +131,7 @@ namespace ledMatrixD {
       }
       std::cout << "(parent) did not termonate" << std::endl;
     }
-    ScriptRunner::~ScriptRunner(){
-    }
   }
+  ScriptRunner::~ScriptRunner(){
+  }
+}
