@@ -1,0 +1,2 @@
+1. Free all character strings returned by the ini reader in the displays configuratio and script runner
+2. Fix color, not sure what the problem is
