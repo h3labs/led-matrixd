@@ -384,11 +384,11 @@ namespace ledMatrixD {
     srand((unsigned int)seed);
   }
   void RandomSpriteDisplay::show(){
-    std::cout << "(RandomSpriteDisplay) Showing random ppm" << std::endl;
     for(int i = 0; i < this->times; i++){
       int randInt = rand() % fileMap.size();
       std::cout << "(RandomSpriteDisplay) Random integer " << randInt <<  std::endl;
       std::string filename = fileMap[randInt];
+      std::cout << "(RandomSpriteDisplay) Showing \"" << filename << "\"" <<  std::endl;
       this->loadImage(this->spritePath + filename);
       this->draw(0);
       this->wait(this->spriteDuration);
@@ -459,26 +459,14 @@ namespace ledMatrixD {
     };
     std::vector<Display*> displaysVector(displays, displays + (sizeof(displays) / sizeof(Display*)));
     for(std::vector<Display*>::iterator it = displaysVector.begin(); it != displaysVector.end();){
+#ifdef DEBUG
       std::cout << "Drawing new display" << std::endl;
+#endif
       (*it)->show();
       if((*it) == displaysVector.back())
         it = displaysVector.begin();
       else
         ++it;
     }
-    /*
-    TitleDisplay* titleDisplay = new TitleDisplay();
-    LogoDisplay* logoDisplayPre = new LogoDisplay(0);
-    SpinLogoDisplay* spinLogoDisplay = new SpinLogoDisplay();
-    LogoDisplay* logoDisplayPost = new LogoDisplay(1);
-    ShopStatusDisplay* shopStatusDisplay = new ShopStatusDisplay();
-    RandomSpriteDisplay* randomSpriteDisplay = new RandomSpriteDisplay();
-    titleDisplay->show();
-    logoDisplayPre->show();
-    spinLogoDisplay->show();
-    logoDisplayPost->show();
-    shopStatusDisplay->show();
-    randomSpriteDisplay->show();
-    */
   }
 }

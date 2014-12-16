@@ -55,10 +55,10 @@ namespace ledMatrixD {
         std::cout << "(parent) Script runner process started" << std::endl;
         this->observer = new FileCreatedStatusObserver();
         this->observer->registerForNotifications(
-          ledMatrixD::path(this->shopStatusFilename), 
-          ledMatrixD::basename(this->shopStatusFilename), 
-          this
-        );
+            ledMatrixD::path(this->shopStatusFilename), 
+            ledMatrixD::basename(this->shopStatusFilename), 
+            this
+            );
         this->observer->observe();
         munmap(this->terminate, sizeof(bool));
         pid = id;
@@ -113,25 +113,24 @@ namespace ledMatrixD {
           execl(this->shopStatusUpdateScriptFilename.c_str(), "closed", NULL);
           exit(EXIT_FAILURE);
         }
-      }
-    }else if(pid < 0){
-      std::cout << "(parent) child not created... unable to call script \"" << this->shopStatusUpdateScriptFilename << "\""<< std::endl;
-    }else{
-      int status;
-      std::cout << "(parent) waiting..." << std::endl;
-      if(waitpid (pid, &status, 0) != pid){
-        std::cout << "(parent) something's wrong..." << std::endl;
+      }else if(pid < 0){
+        std::cout << "(parent) child not created... unable to call script \"" << this->shopStatusUpdateScriptFilename << "\""<< std::endl;
       }else{
-        std::cout << "(parent) child arrived!" << std::endl;
+        int status;
+        std::cout << "(parent) waiting..." << std::endl;
+        if(waitpid (pid, &status, 0) != pid){
+          std::cout << "(parent) something's wrong..." << std::endl;
+        }else{
+          std::cout << "(parent) child arrived!" << std::endl;
+        }
       }
+      std::cout << "(parent) checking whether to terminate" << std::endl;
+      if(*this->terminate){
+        std::cout << "terminate" << std::endl;
+        exit(0);
+      }
+      std::cout << "(parent) did not termonate" << std::endl;
     }
-    std::cout << "(parent) checking whether to terminate" << std::endl;
-    if(*this->terminate){
-      std::cout << "terminate" << std::endl;
-      exit(0);
+    ScriptRunner::~ScriptRunner(){
     }
-    std::cout << "(parent) did not termonate" << std::endl;
   }
-  ScriptRunner::~ScriptRunner(){
-  }
-}
