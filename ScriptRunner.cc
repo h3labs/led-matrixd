@@ -101,28 +101,39 @@ namespace ledMatrixD {
           exit(EXIT_FAILURE);
       }
       //call update script
-      int res = 0;
-      std::cout << "running script > " << std::endl;
-      if(this->open){
-        std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
-        //res = execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
-      }else{
-        std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
-        //res = execl(this->shopStatusUpdateScriptFilename.c_str(), "close", NULL);
+      pid_t pid;
+      pid = fork ();
+      if(pid == 0){
+        std::cout << "running script > " << std::endl;
+        if(this->open){
+          std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
+          execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
+          exit(EXIT_FAILURE);
+
+        }else{
+          std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
+          exit(EXIT_FAILURE);
+        }
       }
-      if(res < 0){
-        perror("execl() failed");
-        exit(EXIT_FAILURE);
+    }else if(pid < 0){
+      std::cout << "(parent) child not created... unable to call script \"" << this->shopStatusUpdateScriptFilename << "\""<< std::endl;
+    }else{
+      int status;
+      std::cout << "(parent) waiting..." << std::endl;
+      if(waitpid (pid, &status, 0) != pid){
+        std::cout << "(parent) something's wrong..." << std::endl;
+      }else{
+        std::cout << "(parent) child arrived!" << std::endl;
       }
     }
-    std::cout << "checking whether to terminate" << std::endl;
+    std::cout << "(parent) checking whether to terminate" << std::endl;
     /*
     if(*this->terminate){
       std::cout << "terminate" << std::endl;
       exit(0);
     }
     */
-    std::cout << "don't terminate" << std::endl;
+    std::cout << "(parent) did not termonate" << std::endl;
   }
   ScriptRunner::~ScriptRunner(){
   }
