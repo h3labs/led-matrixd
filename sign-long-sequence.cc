@@ -372,6 +372,7 @@ namespace ledMatrixD {
           std::cout << "(RandomSpriteDisplay) Adding file \"" << filename << "\"" << std::endl;
           //has the .ppm suffix check this just to be safe
           fileMap[i] = filename;
+          i++;
         }
       }
     }
