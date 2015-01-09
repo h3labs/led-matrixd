@@ -1,5 +1,5 @@
 
-#include <unistd.h>
+#include <unistd.h> 
 #include <sys/mman.h>
 
 #include <string>
@@ -105,12 +105,13 @@ namespace ledMatrixD {
         std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
         res = execl(this->shopStatusUpdateScriptFilename.c_str(), "close", NULL);
       }
+	std::cout << "result=" << res << std::endl;
       if(res < 0){
         perror("execl() failed");
         exit(EXIT_FAILURE);
       }
     }
-    if(this->terminate){
+    if(*this->terminate){
       exit(0);
     }
   }
