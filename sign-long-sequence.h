@@ -81,7 +81,9 @@ namespace ledMatrixD
         const size_t pixel_count = new_width * new_height;
         Pixel *new_image = new Pixel [ pixel_count ];
         assert(sizeof(Pixel) == 3);   // we make that assumption.
+#ifdef DEBUG
         std::cout << "Reading image \"" << filename << "\" with " << pixel_count << " pixels" << std::endl;
+#endif
         if (fread(new_image, sizeof(Pixel), pixel_count, f) != pixel_count) {
           line = "";
           EXIT_WITH_MSG("Not enough pixels read.");

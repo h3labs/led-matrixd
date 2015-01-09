@@ -1,6 +1,8 @@
 
 #include <unistd.h> 
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include <string>
 #include <iostream>
@@ -12,7 +14,7 @@ namespace ledMatrixD {
   std::string basename(std::string path){
     unsigned int lastSeparatorIndex = path.rfind("/");
     if(lastSeparatorIndex != std::string::npos){
-      return path.substr(lastSeparatorIndex);
+      return path.substr(lastSeparatorIndex+1);
     }
     return std::string("");
   }
@@ -25,7 +27,6 @@ namespace ledMatrixD {
   }
 
   ScriptRunner::ScriptRunner(){
-    this->observer = new FileCreatedStatusObserver();
     //get string for location of beacon file
     char* shopStatusFilename = NULL;
     if(ini::get_string("FILE SYSTEM", "shop_status_flag", &shopStatusFilename) != 0){
@@ -51,17 +52,18 @@ namespace ledMatrixD {
     pid_t id = fork();
     if(id >= 0){
       if(id == 0){
-        std::cout << "child process running" << std::endl;
+        std::cout << "(parent) Script runner process started" << std::endl;
+        this->observer = new FileCreatedStatusObserver();
         this->observer->registerForNotifications(
-          ledMatrixD::path(this->shopStatusFilename), 
-          ledMatrixD::basename(this->shopStatusFilename), 
-          this
-        );
+            ledMatrixD::path(this->shopStatusFilename), 
+            ledMatrixD::basename(this->shopStatusFilename), 
+            this
+            );
         this->observer->observe();
         munmap(this->terminate, sizeof(bool));
         pid = id;
       }else{
-        std::cout << "parent process running" << std::endl;
+        std::cout << "(root) process running" << std::endl;
         pid = id;
       }
     }else{
@@ -78,7 +80,7 @@ namespace ledMatrixD {
   void ScriptRunner::notify(std::string fileName, int event){
     std::cout << "got notification for file: " << fileName << " with event[" << event << "]" << std::endl;
     //call the script and update website
-    if(!fileName.compare(this->shopStatusFilename)){
+    if(!fileName.compare(ledMatrixD::basename(this->shopStatusFilename))){
       switch(event){
         case 0:
           this->open = false;
@@ -97,22 +99,37 @@ namespace ledMatrixD {
           exit(EXIT_FAILURE);
       }
       //call update script
-      int res = 0;
-      if(this->open){
-        std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
-        res = execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
+      pid_t pid;
+      pid = fork ();
+      if(pid == 0){
+        std::cout << "(child) running script" << std::endl;
+        if(this->open){
+          std::cout << "(child) ." << this->shopStatusUpdateScriptFilename << " [open]" << std::endl;
+          execl(this->shopStatusUpdateScriptFilename.c_str(), "open", NULL);
+          exit(EXIT_FAILURE);
+
+        }else{
+          std::cout << "(child)." << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
+          execl(this->shopStatusUpdateScriptFilename.c_str(), "closed", NULL);
+          exit(EXIT_FAILURE);
+        }
+      }else if(pid < 0){
+        std::cout << "(parent) child not created... unable to call script \"" << this->shopStatusUpdateScriptFilename << "\""<< std::endl;
       }else{
-        std::cout << "running script " << this->shopStatusUpdateScriptFilename << " [closed]" << std::endl;
-        res = execl(this->shopStatusUpdateScriptFilename.c_str(), "close", NULL);
+        int status;
+        std::cout << "(parent) waiting..." << std::endl;
+        if(waitpid (pid, &status, 0) != pid){
+          std::cout << "(parent) something's wrong..." << std::endl;
+        }else{
+          std::cout << "(parent) child arrived!" << std::endl;
+        }
       }
-	std::cout << "result=" << res << std::endl;
-      if(res < 0){
-        perror("execl() failed");
-        exit(EXIT_FAILURE);
+	std::cout << "(parent) checking whether to terminate" << std::endl;
+      if(*this->terminate){
+        std::cout << "terminate" << std::endl;
+        exit(0);
       }
-    }
-    if(*this->terminate){
-      exit(0);
+      std::cout << "(parent) did not termonate" << std::endl;
     }
   }
   ScriptRunner::~ScriptRunner(){

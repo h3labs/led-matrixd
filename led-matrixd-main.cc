@@ -27,7 +27,7 @@
 
 namespace ledMatrixD
 {
-  int pwm_bits = 8;
+  int pwm_bits = -1;
 	bool large_display = false;
 	int demo = -1;
 	int rows = 32;
