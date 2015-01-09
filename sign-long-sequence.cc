@@ -60,6 +60,33 @@ namespace ledMatrixD {
     }
   }
   /**
+   * class TaglineDisplay
+   *
+   * Display a tagline contained in PPM format in tagline.ppm.
+   *
+   */
+  TaglineDisplay::TaglineDisplay() : taglineScroll(0) {
+    if(ini::get_int("ITERATIONS", "tagline_scroll", &(this->taglineScroll)) != 0){
+      this->undefinedMsg("ITERATIONS", "tagline_scroll");
+    }
+  }
+  void TaglineDisplay::show(){
+    std::cout << "(TaglineDisplay) Started" << std::endl;
+    std::string taglineFilename = "tagline.ppm";
+    std::string fullTaglineFilename = this->getFilePath(taglineFilename);
+    if(!this->LoadPPM(fullTaglineFilename)){
+      EXIT_MSG("could not find tagline file");
+    }
+    if(this->taglineScroll < 0){
+      EXIT_MSG("in ini configuration file ITERATIONS:tagline_scroll must be greater than zero");
+    }
+    //TODO: have this in a scroll method as it might generalized for other displays
+    for(int i = 0; i < this->taglineScroll; i++){
+      //TODO: msecs change
+      this->scroll(30);
+    }
+  }
+  /**
    * class LogoDisplay
    *
    * displays the atom logo for a specific duration
@@ -446,8 +473,10 @@ namespace ledMatrixD {
   void runLongSequence(){
     initLongSequence();
     Display* displays[] = {
+/*
       new DateDisplay(),
       new TitleDisplay(),
+      new TaglineDisplay(),
       new LogoDisplay(0),
       new SpinLogoDisplay(),
       new LogoDisplay(1),
@@ -456,6 +485,26 @@ namespace ledMatrixD {
       new ConwaysDisplay(),
       new URLDisplay(),
       new TwitterDisplay()
+*/
+      new TitleDisplay(),
+      new LogoDisplay(0),
+      new SpinLogoDisplay(),
+      new LogoDisplay(1),
+      new TitleDisplay(),
+      new TaglineDisplay(),
+      new TitleDisplay(),
+      new DateDisplay(),
+      new TitleDisplay(),
+      new ShopStatusDisplay(),
+      new TitleDisplay(),
+      new ConwaysDisplay(),
+      new TitleDisplay(),
+      new URLDisplay(),
+      new TitleDisplay(),
+      new RandomSpriteDisplay(),
+      new TitleDisplay(),
+      new TwitterDisplay()
+
     };
     std::vector<Display*> displaysVector(displays, displays + (sizeof(displays) / sizeof(Display*)));
     for(std::vector<Display*>::iterator it = displaysVector.begin(); it != displaysVector.end();){

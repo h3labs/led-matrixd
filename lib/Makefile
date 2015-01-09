@@ -11,7 +11,7 @@ TARGET=librgbmatrix.a
 #DEFINES+=-DINVERSE_RGB_DISPLAY_COLORS
 
 INCDIR=../include
-CXXFLAGS=-Wall -g $(DEFINES)
+CXXFLAGS=-Wall -g $(DEFINES) -O3
 
 $(TARGET) : $(OBJECTS)
 	ar rcs $@ $^

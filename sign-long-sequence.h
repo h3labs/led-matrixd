@@ -81,9 +81,6 @@ namespace ledMatrixD
         const size_t pixel_count = new_width * new_height;
         Pixel *new_image = new Pixel [ pixel_count ];
         assert(sizeof(Pixel) == 3);   // we make that assumption.
-#ifdef DEBUG
-        std::cout << "Reading image \"" << filename << "\" with " << pixel_count << " pixels" << std::endl;
-#endif
         if (fread(new_image, sizeof(Pixel), pixel_count, f) != pixel_count) {
           line = "";
           EXIT_WITH_MSG("Not enough pixels read.");
@@ -98,6 +95,9 @@ namespace ledMatrixD
         current_image_.image = new_image;
         current_image_.width = new_width;
         current_image_.height = new_height;
+//        std::cout << "Reading image \"" << filename << "\" with " << pixel_count << " pixels" << std::endl;
+		const Pixel &p = current_image_.getPixel(15, 15);
+//        std::cout << "Color @ 15,15: " <<  (int)p.red << "," << (int)p.green << "," << (int)p.blue << std::endl;
         return true;
       }
 
@@ -143,6 +143,13 @@ namespace ledMatrixD
       void show();
     private:
       int titleScroll;
+  };
+  class TaglineDisplay : public Display {
+    public:
+      TaglineDisplay();
+      void show();
+    private:
+      int taglineScroll;
   };
   class LogoDisplay : public Display {
     public:
