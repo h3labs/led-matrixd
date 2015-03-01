@@ -12,31 +12,37 @@ namespace ledMatrixD {
   }
   int FileCreatedStatusObserver::registerForNotifications(std::string dirName, std::string fileName, FileStatusNotifee* notifee)
   {
-    std::cout << "Registering to listen {" << dirName << ", " << fileName << "}" << std::endl; 
+#ifdef DEBUG
+    std::cout << "Registering to listen {" << dirName << ", " << fileName << "}" << std::endl;
+#endif
     int ifd = inotify_add_watch(this->fd, dirName.c_str(), IN_CREATE | IN_DELETE);
     if (ifd == -1) {
       perror("inotify_add_watch");
       exit(EXIT_FAILURE);
     }
-    notificationMap.insert(std::make_pair(ifd, notifee));	
+    notificationMap.insert(std::make_pair(ifd, notifee));
     std::string fullPathFilename = dirName + "/" + fileName;
     if(checkFileExists(fullPathFilename)){
-      notifee->notify(fileName, 1);		
+      notifee->notify(fileName, 1);
     }else{
       notifee->notify(fileName, 0);
     }
     return ifd;
   }
   void FileCreatedStatusObserver::observe()
-  {	
+  {
     fd_set ifs;
     int fd_set_size = this->fd + 1;
     while(true){
       int num_fds = 0;
+#ifdef DEBUG
       printf("waiting for events to happen in input dir directory\n");
+#endif
       FD_ZERO(&ifs);
       FD_SET(this->fd, &ifs);
+#ifdef DEBUG
       std::cout << "fd " << this->fd << std::endl;
+#endif
       num_fds = select(fd_set_size, &ifs, NULL, NULL, NULL);
       printf("got num_fds=%d\n", num_fds);
       if (num_fds == -1){
@@ -48,7 +54,7 @@ namespace ledMatrixD {
           this->notifyOfIEvents();
         }
       }
-    }	
+    }
   }
   void FileCreatedStatusObserver::notifyOfIEvents()
   {
@@ -65,7 +71,7 @@ namespace ledMatrixD {
     if (event->mask & IN_CREATE)
       printf("CREATED: ");
     else if(event->mask & IN_DELETE)
-      printf("DELETED: ");	
+      printf("DELETED: ");
 
     if(event->len)
       printf("%s", event->name);
@@ -76,9 +82,9 @@ namespace ledMatrixD {
       printf(" [file]\n");
 
     std::string fileName = event->name;
-    FileStatusNotifee* notifee = notificationMap[event->wd];				
+    FileStatusNotifee* notifee = notificationMap[event->wd];
     if (event->mask & IN_CREATE)
-      notifee->notify(fileName, 2);	
+      notifee->notify(fileName, 2);
     else if(event->mask & IN_DELETE)
       notifee->notify(fileName, 3);
   }

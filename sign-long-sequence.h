@@ -184,6 +184,8 @@ namespace ledMatrixD
       int r;
       int g;
       int b;
+      std::string arduino_day;
+      std::string pi_day;
   };
   class ShopStatusDisplay : public Display {
     public:

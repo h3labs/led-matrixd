@@ -250,8 +250,10 @@ public:
     }
 #undef EXIT_WITH_MSG
     fclose(f);
+#ifdef DEBUG
     fprintf(stderr, "Read image '%s' with %dx%d\n", filename,
             new_width, new_height);
+#endif
     horizontal_position_ = 0;
     MutexLock l(&mutex_new_image_);
     new_image_.Delete();  // in case we reload faster than is picked up

@@ -7,16 +7,16 @@ extern "C" {
 #ifndef __INI_READER_H__
 #define __INI_READER_H__
 
-namespace ini { 
+namespace ini {
   char* ini_file = "matrix.ini";
   struct ::collection_item* ini_config = NULL;
-  struct ::collection_item* errors = NULL;	
+  struct ::collection_item* errors = NULL;
   struct ::collection_item* get_item(const char* section, const char* attribute){
     struct ::collection_item* item = NULL;
     int ares = get_config_item(section, attribute, ini_config, &item);
     if(ares != 0){
       return NULL;
-    }  
+    }
     return item;
   }
   //TODO: clean all uses of this or FREE
@@ -34,14 +34,16 @@ namespace ini {
   }
 	void print_ini_variables(){
 		int num_sections = 0;
-		char** section_list = ::get_section_list(ini_config, &num_sections, NULL); 		
+		char** section_list = ::get_section_list(ini_config, &num_sections, NULL);
 		if(section_list == NULL){
 			perror("ini sections");
 			exit(EXIT_FAILURE);
 		}
 		int i;
 		for(i = 0; i < num_sections; i++){
+#ifdef DEBUG
 			printf("section_name: %s\n", section_list[i]);
+#endif
 			int num_attr = 0;
 			char** attr_list = get_attribute_list(ini_config, section_list[i], &num_attr, NULL);
 			int j;
@@ -51,7 +53,7 @@ namespace ini {
 				if(ares != 0){
 					perror("get_config_item()");
 					exit(EXIT_FAILURE);
-				}   	
+				}
 				char* item_string = get_string_config_value(item, NULL);
 				if(item_string == NULL){
 					perror("get_string_config_value()");
@@ -64,14 +66,16 @@ namespace ini {
 
 
 	void read_file(const char* file){
-		//read ini file with all the configuration options 
+		//read ini file with all the configuration options
 		int res = ::config_from_file("led-matrixd", file, &ini_config, INI_STOP_ON_ERROR, &errors);
 		if(res != 0){
 			perror("read_ini_file()");
 			exit(EXIT_FAILURE);
-		}   	
-    printf("Matrix Led Deamon Configured with:\n");
-    print_ini_variables();
+		}
+#ifdef DEBUG
+      printf("Matrix Led Deamon Configured with:\n");
+      print_ini_variables();
+#endif
 	}
 }
 #endif

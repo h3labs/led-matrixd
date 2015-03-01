@@ -28,44 +28,47 @@ namespace ledMatrixD {
     // the matrix continuously.
     this->image_gen = NULL;
 
-
+#ifdef DEBUG
     std::cout << "setting up notification for /shopisopen.beacon" << std::endl;
+#endif
     this->observer = new FileCreatedStatusObserver();
   }
   void OpenCloseSign::run()
   {
     this->observer->registerForNotifications("signcfg/", isOpenFileName, this);
-    this->observer->observe();	
+    this->observer->observe();
   }
   void OpenCloseSign::notify(std::string fileName, int event)
   {
+#ifdef DEBUG
     std::cout << "got notification for file: " << fileName << " with event[" << event << "]" << std::endl;
+#endif
     if(!fileName.compare(this->isOpenFileName)){
       switch(event){
         case 0:
-          this->isOpen = true;	
-          this->showSign(true, false); 
-          this->isOpen = false;	
+          this->isOpen = true;
+          this->showSign(true, false);
+          this->isOpen = false;
           break;
         case 1:
-          this->isOpen = false;	
-          this->showSign(true, true); 
-          this->isOpen = true;	
+          this->isOpen = false;
+          this->showSign(true, true);
+          this->isOpen = true;
           break;
         case 2:
-          this->showSign(false, true); 
-          this->isOpen = true;	
+          this->showSign(false, true);
+          this->isOpen = true;
           break;
         case 3:
-          this->showSign(false, false); 
-          this->isOpen = false;	
+          this->showSign(false, false);
+          this->isOpen = false;
           break;
         default:
           std::cout << "event did not correspond to any possibility" << std::endl;
           exit(EXIT_FAILURE);
       }
     }
-  } 
+  }
 
   void OpenCloseSign::showSign(bool first, bool newIsOpen)
   {
@@ -73,7 +76,9 @@ namespace ledMatrixD {
       if(newIsOpen != this->isOpen){
         //remove old led matrix sign
         delete image_gen;
+#ifdef DEBUG
         std::cout << "removing old scroller image" << std::endl;
+#endif
       }
     }
     //create new matrix and display for either open or close
@@ -87,7 +92,9 @@ namespace ledMatrixD {
           exit(EXIT_FAILURE);
         }
         this->image_gen = scroller;
+#ifdef DEBUG
         std::cout << "Show \'open\'" << std::endl;
+#endif
       }else{
         ImageScroller *scroller = new ImageScroller(this->canvas,
             demo == 1 ? 1 : -1,
@@ -97,10 +104,12 @@ namespace ledMatrixD {
           exit(EXIT_FAILURE);
         }
         this->image_gen = scroller;
+#ifdef DEBUG
         std::cout << "Show \'closed\'" << std::endl;
+#endif
       }
       this->image_gen->Start();
     }
-  } 
+  }
 }
 

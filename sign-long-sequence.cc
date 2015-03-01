@@ -29,7 +29,9 @@ namespace ledMatrixD {
     return std::string(this->mainPath) + "/" + filename;
   }
   void Display::undefinedMsg(std::string section, std::string attr){
+#ifdef DEBUG
     std::cerr << "led-matrixd: undefined " << section << " > " << attr << std::endl;
+#endif
     exit(EXIT_FAILURE);
   }
   /**
@@ -44,7 +46,9 @@ namespace ledMatrixD {
     }
   }
   void TitleDisplay::show(){
+#ifdef DEBUG
     std::cout << "(TitleDisplay) Started" << std::endl;
+#endif
     std::string titleFilename = "title_card.ppm";
     std::string fullTitleFilename = this->getFilePath(titleFilename);
     if(!this->LoadPPM(fullTitleFilename)){
@@ -71,7 +75,9 @@ namespace ledMatrixD {
     }
   }
   void TaglineDisplay::show(){
+#ifdef DEBUG
     std::cout << "(TaglineDisplay) Started" << std::endl;
+#endif
     std::string taglineFilename = "tagline.ppm";
     std::string fullTaglineFilename = this->getFilePath(taglineFilename);
     if(!this->LoadPPM(fullTaglineFilename)){
@@ -118,8 +124,10 @@ namespace ledMatrixD {
     //TODO: free atom dir
   }
   void LogoDisplay::show(){
+#ifdef DEBUG
     std::cout << "(LogoDisplay) Started" << std::endl;
     std::cout << "Logo: duration[" << this->duration << "]" << std::endl;
+#endif
     this->loadImage(this->atomPath + "mf000.ppm");
     this->draw(0);
     this->wait((unsigned int)this->duration);
@@ -147,7 +155,9 @@ namespace ledMatrixD {
     //TODO: free atom dir
   }
   void SpinLogoDisplay::show(){
+#ifdef DEBUG
     std::cout << "(SpinLogoDisplay) Started" << std::endl;
+#endif
     for(int j = 0; j < this->atomSpin; j++){
       for(int i = 0; i < 24; i++){
         char buf[40];
@@ -182,7 +192,7 @@ namespace ledMatrixD {
       this->undefinedMsg("DATE", "date_g");
     }
     if(ini::get_int("DATE", "date_b", &(this->b)) != 0){
-      this->undefinedMsg("DATE", "b");
+      this->undefinedMsg("DATE", "date_b");
     }
     //TODO: free up character strings
     char* fontDir = NULL;
@@ -201,6 +211,31 @@ namespace ledMatrixD {
     }else{
       this->format = this->format.substr(1, this->format.size()-2);
     }
+
+    //get arduino_day config
+    char* arduino_day = NULL;
+    if(ini::get_string("SPECIAL_DATES","arduino_day", &(arduino_day)) != 0){
+      this->undefinedMsg("SPECIAL_DATES", "arduino_day");
+    }
+    this->arduino_day = arduino_day;
+    if(this->arduino_day[0] != '"' || this->arduino_day[this->arduino_day.size()-1] != '"'){
+      EXIT_MSG("ini config: arduino_day must be a string sorrounded by \" marks ");
+    }else{
+      this->arduino_day = this->arduino_day.substr(1, this->arduino_day.size()-2);
+    }
+
+    //get pi_day config
+    char* pi_day = NULL;
+    if(ini::get_string("SPECIAL_DATES", "pi_day", &(pi_day)) != 0){
+      this->undefinedMsg("SPECIAL_DATES", "pi_day");
+    }
+    this->pi_day = pi_day;
+    if(this->pi_day[0] != '"' || this->pi_day[this->pi_day.size()-1] != '"'){
+      EXIT_MSG("ini config: pi_day must be a string sorrounded by \" marks ");
+    }else{
+      this->pi_day = this->pi_day.substr(1, this->pi_day.size()-2);
+    }
+
     //get font filename
     char* fontFilename = NULL;
     if(ini::get_string("DATE", "date_font", &(fontFilename)) != 0){
@@ -212,23 +247,75 @@ namespace ledMatrixD {
     }
   }
   void DateDisplay::show(){
+#ifdef DEBUG
     std::cout << "(DateDisplay) Started" << std::endl;
+#endif
     char buf[100];
     time_t rawtime;
     struct tm * timeinfo;
-    rgb_matrix::Color color(this->r, this->g, this->b); 
+
     time(&rawtime);
     timeinfo = localtime (&rawtime);
     //TODO: check and make sure format is correctly added here
     strftime(buf, 100, this->format.c_str(), timeinfo);
-    //draw the string in buf 
+    //draw the string in buf
 #ifdef DEBUG
     std::cout << "time is \"" << buf << "\" using format " << this->format.c_str() << std::endl;
 #endif
     std::string timeStr = buf;
 #ifdef DEBUG
-    std::cout << "outputing " << timeStr << std::endl;
+    std::cout << "outputting " << timeStr << std::endl;
 #endif
+
+    std::string dateStr = std::string(buf);
+
+    // change color for arduino day
+#ifdef DEBUG
+//    std::cout << "arduino day? " << this->arduino_day.find(dateStr) << std::endl;
+    std::cout << "arduino day? " << timeStr.find(this->arduino_day) << std::endl;
+#endif
+#ifdef DEBUG
+//    std::cout << "pi day? " << this->pi_day.find(dateStr) << std::endl;
+    std::cout << "pi day? " << timeStr.find(this->pi_day) << std::endl;
+#endif
+
+//    if (this->arduino_day.find(dateStr) != std::string::npos) {
+    if (timeStr.find(this->arduino_day) != std::string::npos) {
+      if(ini::get_int("SPECIAL_COLORS", "arduino_day_r", &(this->r)) != 0){
+        this->undefinedMsg("SPECIAL_COLORS", "arduino_day_r");
+      }
+      if(ini::get_int("SPECIAL_COLORS", "arduino_day_g", &(this->g)) != 0){
+        this->undefinedMsg("SPECIAL_COLORS", "arduino_day_g");
+      }
+      if(ini::get_int("SPECIAL_COLORS", "arduino_day_b", &(this->b)) != 0){
+        this->undefinedMsg("SPECIAL_COLORS", "arduino_day_b");
+      }
+#ifdef DEBUG
+    std::cout << "today is arduino day" << std::endl;
+#endif
+    }
+    // change color for pi day
+//    else if (this->pi_day.find(dateStr) != std::string::npos) {
+    else if (timeStr.find(this->pi_day) != std::string::npos) {
+      if(ini::get_int("SPECIAL_COLORS", "pi_day_r", &(this->r)) != 0){
+        this->undefinedMsg("SPECIAL_COLORS", "pi_day_r");
+      }
+      if(ini::get_int("SPECIAL_COLORS", "pi_day_g", &(this->g)) != 0){
+        this->undefinedMsg("SPECIAL_COLORS", "pi_day_g");
+      }
+      if(ini::get_int("SPECIAL_COLORS", "pi_day_b", &(this->b)) != 0){
+        this->undefinedMsg("SPECIAL_COLORS", "pi_day_b");
+      }
+#ifdef DEBUG
+    std::cout << "today is pi day" << std::endl;
+#endif
+    }
+
+#ifdef DEBUG
+    std::cout << "time colors: " << this->r << ", " << this->g << ", " << this->b << std::endl;
+#endif
+    rgb_matrix::Color color(this->r, this->g, this->b);
+
     int cX = this->x;
     int cY = this->y;
     //TODO: check this functions work
@@ -302,7 +389,9 @@ namespace ledMatrixD {
     //TODO: free beacon filename
   }
   void ShopStatusDisplay::show(){
+#ifdef DEBUG
     std::cout << "(ShopStatusDisplay) Started" << std::endl;
+#endif
     for(int i = 0; i < this->scrolls; i++){
       if(this->beaconExists()){
         this->loadImage("open.ppm");
@@ -334,7 +423,9 @@ namespace ledMatrixD {
     }
   }
   void ConwaysDisplay::show(){
+#ifdef DEBUG
     std::cout << "(ConwaysDisplay) Showing game of life" << std::endl;
+#endif
     GameLife* gameLife = new GameLife(canvas, 400, true);
     gameLife->Start();
     this->wait((unsigned int)this->duration);
@@ -355,7 +446,9 @@ namespace ledMatrixD {
     }
   }
   void URLDisplay::show(){
+#ifdef DEBUG
       std::cout << "(URLDisplay) Showing URL" << std::endl;
+#endif
       this->loadImage("url.ppm");
       for(int i = 0; i < this->scrolls; i++){
         this->scroll(this->scrollMS);
@@ -388,7 +481,9 @@ namespace ledMatrixD {
     if(dir == NULL){
       EXIT_MSG("ini configuration sprite_dir does not exist or is not a directory");
     }
+#ifdef DEBUG
     std::cout << "Reading Directory \"" << this->getFullSpritePath() << "\"" << std::endl;
+#endif
     int i = 0;
     std::string suffix = ".ppm";
     while((dirFile = readdir(dir)) != NULL){
@@ -396,7 +491,9 @@ namespace ledMatrixD {
       if(len >= suffix.size()){
         std::string filename = dirFile->d_name;
         if(filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) == 0){
+#ifdef DEBUG
           std::cout << "(RandomSpriteDisplay) Adding file \"" << filename << "\"" << std::endl;
+#endif
           //has the .ppm suffix check this just to be safe
           fileMap[i] = filename;
           i++;
@@ -407,15 +504,21 @@ namespace ledMatrixD {
     //initialize random number generator and distribution
     time_t t;
     unsigned int seed = (unsigned int)time(&t);
+#ifdef DEBUG
     std::cout << "(RandomSpriteDisplay) Seed is " << seed <<  std::endl;
+#endif
     srand((unsigned int)seed);
   }
   void RandomSpriteDisplay::show(){
     for(int i = 0; i < this->times; i++){
       int randInt = rand() % fileMap.size();
+#ifdef DEBUG
       std::cout << "(RandomSpriteDisplay) Random integer " << randInt <<  std::endl;
+#endif
       std::string filename = fileMap[randInt];
+#ifdef DEBUG
       std::cout << "(RandomSpriteDisplay) Showing \"" << filename << "\"" <<  std::endl;
+#endif
       this->loadImage(this->spritePath + filename);
       this->draw(0);
       this->wait(this->spriteDuration);
@@ -441,7 +544,9 @@ namespace ledMatrixD {
     }
   }
   void TwitterDisplay::show(){
+#ifdef DEBUG
       std::cout << "(TwitterDisplay) Started" << std::endl;
+#endif
       this->loadImage("twitter.ppm");
       for(int i = 0; i < this->scrolls; i++){
         this->scroll(this->scrollMS);
@@ -457,10 +562,12 @@ namespace ledMatrixD {
       fprintf(stderr, "IO could not initialized\n");
       exit(EXIT_FAILURE);
     }
+#ifdef DEBUG
     std::cout << "rows=" << rows << std::endl;
     std::cout << "chain=" << chain << std::endl;
     std::cout << "do_luminance_correct=" << do_luminance_correct << std::endl;
     std::cout << "pwm_bits=" << pwm_bits << std::endl;
+#endif
     rgb_matrix::RGBMatrix *matrix = new rgb_matrix::RGBMatrix(&io, rows, chain);
     matrix->set_luminance_correct(do_luminance_correct);
     if (pwm_bits >= 0 && !matrix->SetPWMBits(pwm_bits)) {
@@ -486,6 +593,8 @@ namespace ledMatrixD {
       new URLDisplay(),
       new TwitterDisplay()
 */
+
+/*
       new TitleDisplay(),
       new LogoDisplay(0),
       new SpinLogoDisplay(),
@@ -504,6 +613,24 @@ namespace ledMatrixD {
       new RandomSpriteDisplay(),
       new TitleDisplay(),
       new TwitterDisplay()
+*/
+
+      new TitleDisplay(),
+
+      new LogoDisplay(0),
+      new SpinLogoDisplay(),
+      new LogoDisplay(1),
+
+      new DateDisplay(),
+      new ShopStatusDisplay(),
+
+      new TitleDisplay(),
+      new TaglineDisplay(),
+      new ConwaysDisplay(),
+      new URLDisplay(),
+      new TwitterDisplay(),
+      new RandomSpriteDisplay()
+
 
     };
     std::vector<Display*> displaysVector(displays, displays + (sizeof(displays) / sizeof(Display*)));

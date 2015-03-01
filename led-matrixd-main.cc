@@ -19,7 +19,7 @@
 #include <string>
 #include <map>
 #include <algorithm>
-#include <utility>	
+#include <utility>
 
 #include "OpenCloseSign.h"
 #include "ScriptRunner.h"
@@ -35,7 +35,6 @@ namespace ledMatrixD
 	int scroll_ms = 30;
 	bool do_luminance_correct = true;
 	rgb_matrix::GPIO io;
-	
 }
 
 
@@ -44,24 +43,32 @@ using namespace std;
 int sequence = 0;
 void usage(const char* msg){
   printf( "led-matrixd: %s\n"
+          "usage: led-matrixd -C [ini file]\n"
+          "   C: file name (directory) where the ini configuration file\n"
+          "      resides.\n"
+          "\n", msg);
+/*
+  printf( "led-matrixd: %s\n"
           "usage: led-matrixd -C [ini file] -D [sequence run]\n"
           "   C: file name (directory) where the ini configuration file\n"
           "      resides.\n"
           "   D: sequence to run repeatedly\n"
-          "       0: just shown open and close depending if file exists\n" 
+          "       0: just shown open and close depending if file exists\n"
           "       1: show a custome sequence of images, close and open\n"
           "\n", msg);
+*/
 }
 
 int main(int argc, char* argv[])
 {
   //TODO: getopt
   int opt;
-  while ((opt = getopt(argc, argv, "C:D:")) != -1) {
+  while ((opt = getopt(argc, argv, "C:")) != -1) {
     switch (opt) {
     case 'C':
       ini::ini_file = optarg;
       break;
+/*
     case 'D':
       std::cout << "this happened D\n";
       sequence = atoi(optarg);
@@ -72,31 +79,40 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
       }
       break;
+*/
     case '?':
     default:
       usage("");
       exit(EXIT_FAILURE);
     }
   }
+#ifdef DEBUG
   std::cout << "this happened1\n";
+#endif
   ini::read_file(ini::ini_file);
+#ifdef DEBUG
   std::cout << "this happened2\n";
+#endif
   ledMatrixD::OpenCloseSign* openClose = NULL;
   ledMatrixD::ScriptRunner* scriptRunner = NULL;
-  switch(sequence){
-    case 0:
-      openClose = new ledMatrixD::OpenCloseSign();
-      openClose->run();
-      break;
-    case 1:
-    std::cout << "this happened2\n";
+//  switch(sequence){
+//    case 0:
+//      openClose = new ledMatrixD::OpenCloseSign();
+//      openClose->run();
+//      break;
+//    case 1:
+#ifdef DEBUG
+      std::cout << "this happened2\n";
+#endif
       scriptRunner = new ledMatrixD::ScriptRunner();
       scriptRunner->run();
-    std::cout << "this happened2\n";
+#ifdef DEBUG
+      std::cout << "this happened2\n";
+#endif
       ledMatrixD::runLongSequence();
       scriptRunner->stop();
-      break;
-  }
+//      break;
+//  }
 	return 0;
 }
 
