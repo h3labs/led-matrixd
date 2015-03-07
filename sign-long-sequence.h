@@ -96,7 +96,7 @@ namespace ledMatrixD
         current_image_.width = new_width;
         current_image_.height = new_height;
 //        std::cout << "Reading image \"" << filename << "\" with " << pixel_count << " pixels" << std::endl;
-		const Pixel &p = current_image_.getPixel(15, 15);
+//		const Pixel &p = current_image_.getPixel(15, 15);
 //        std::cout << "Color @ 15,15: " <<  (int)p.red << "," << (int)p.green << "," << (int)p.blue << std::endl;
         return true;
       }
@@ -232,6 +232,19 @@ namespace ledMatrixD
     private:
       int scrolls;
       int scrollMS;
+  };
+  class DateBannerDisplay : public Display {
+    public:
+      DateBannerDisplay();
+      void show();
+    private:
+      std::string getFullDateBannerPath();
+      std::string dateBannerPath;
+      std::string format;
+      int scrolls;
+      int scrollMS;
+      std::string arduino_day;
+      std::string pi_day;
   };
   void initLongSequence();
   void runLongSequence();

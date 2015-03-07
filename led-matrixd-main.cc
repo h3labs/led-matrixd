@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 #ifdef DEBUG
   std::cout << "this happened2\n";
 #endif
-  ledMatrixD::OpenCloseSign* openClose = NULL;
+//  ledMatrixD::OpenCloseSign* openClose = NULL;
   ledMatrixD::ScriptRunner* scriptRunner = NULL;
 //  switch(sequence){
 //    case 0:
