@@ -267,14 +267,12 @@ namespace ledMatrixD {
     std::cout << "outputting " << timeStr << std::endl;
 #endif
 
-    std::string dateStr = std::string(buf);
-
     // change color for arduino day
 #ifdef DEBUG
-    std::cout << "arduino day? " << dateStr.find(this->arduino_day) << std::endl;
+    std::cout << "arduino day? " << timeStr.find(this->arduino_day) << std::endl;
 #endif
 #ifdef DEBUG
-    std::cout << "pi day? " << dateStr.find(this->pi_day) << std::endl;
+    std::cout << "pi day? " << timeStr.find(this->pi_day) << std::endl;
 #endif
 
     if (timeStr.find(this->arduino_day) != std::string::npos) {
