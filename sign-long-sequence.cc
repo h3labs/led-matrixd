@@ -212,28 +212,16 @@ namespace ledMatrixD {
       this->format = this->format.substr(1, this->format.size()-2);
     }
 
-    //get arduino_day config
-    char* arduino_day = NULL;
-    if(ini::get_string("SPECIAL_DATES","arduino_day", &(arduino_day)) != 0){
-      this->undefinedMsg("SPECIAL_DATES", "arduino_day");
+    // get special date format
+    char* special_format = NULL;
+    if(ini::get_string("DATE", "special_date_format", &(special_format)) != 0){
+      this->undefinedMsg("DATE", "special_date_format");
     }
-    this->arduino_day = arduino_day;
-    if(this->arduino_day[0] != '"' || this->arduino_day[this->arduino_day.size()-1] != '"'){
-      EXIT_MSG("ini config: arduino_day must be a string sorrounded by \" marks ");
+    this->special_date_format = special_format;
+    if(this->special_date_format[0] != '"' || this->special_date_format[this->special_date_format.size()-1] != '"'){
+      EXIT_MSG("ini config: special_date_format must be a string sorrounded by \" marks ");
     }else{
-      this->arduino_day = this->arduino_day.substr(1, this->arduino_day.size()-2);
-    }
-
-    //get pi_day config
-    char* pi_day = NULL;
-    if(ini::get_string("SPECIAL_DATES", "pi_day", &(pi_day)) != 0){
-      this->undefinedMsg("SPECIAL_DATES", "pi_day");
-    }
-    this->pi_day = pi_day;
-    if(this->pi_day[0] != '"' || this->pi_day[this->pi_day.size()-1] != '"'){
-      EXIT_MSG("ini config: pi_day must be a string sorrounded by \" marks ");
-    }else{
-      this->pi_day = this->pi_day.substr(1, this->pi_day.size()-2);
+      this->special_date_format = this->special_date_format.substr(1, this->special_date_format.size()-2);
     }
 
     //get font filename
@@ -258,6 +246,41 @@ namespace ledMatrixD {
     timeinfo = localtime (&rawtime);
     //TODO: check and make sure format is correctly added here
     strftime(buf, 100, this->format.c_str(), timeinfo);
+
+    char secbuf[100];
+
+    //TODO: check and make sure format is correctly added here
+    strftime(secbuf, 100, this->special_date_format.c_str(), timeinfo);
+
+    char* dateStr = secbuf;
+
+#ifdef DEBUG
+        std::cout << "Date section: '" << dateStr << "'" << std::endl;
+        std::cout << "has section? " << ini::has_section(dateStr) << std::endl;
+#endif
+    if (ini::has_section(dateStr)){
+      // we found a special date section, repopulate the color values
+      int r;
+      int g;
+      int b;
+
+      if(ini::get_int(dateStr, "date_r", &r) == 0 &&
+        ini::get_int(dateStr, "date_g", &g) == 0 &&
+        ini::get_int(dateStr, "date_b", &b) == 0){
+        this->r = r;
+        this->g = g;
+        this->b = b;
+#ifdef DEBUG
+        std::cout << "Date configured for " << dateStr << " with colors " << this->r << ", " << this->g << ", " << this->b << std::endl;
+#endif
+      }
+    }
+    else {
+#ifdef DEBUG
+        std::cout << "Date configuration: default" << std::endl;
+#endif
+    }
+
     //draw the string in buf
 #ifdef DEBUG
     std::cout << "time is \"" << buf << "\" using format " << this->format.c_str() << std::endl;
@@ -266,44 +289,6 @@ namespace ledMatrixD {
 #ifdef DEBUG
     std::cout << "outputting " << timeStr << std::endl;
 #endif
-
-    // change color for arduino day
-#ifdef DEBUG
-    std::cout << "arduino day? " << timeStr.find(this->arduino_day) << std::endl;
-#endif
-#ifdef DEBUG
-    std::cout << "pi day? " << timeStr.find(this->pi_day) << std::endl;
-#endif
-
-    if (timeStr.find(this->arduino_day) != std::string::npos) {
-      if(ini::get_int("SPECIAL_COLORS", "arduino_day_r", &(this->r)) != 0){
-        this->undefinedMsg("SPECIAL_COLORS", "arduino_day_r");
-      }
-      if(ini::get_int("SPECIAL_COLORS", "arduino_day_g", &(this->g)) != 0){
-        this->undefinedMsg("SPECIAL_COLORS", "arduino_day_g");
-      }
-      if(ini::get_int("SPECIAL_COLORS", "arduino_day_b", &(this->b)) != 0){
-        this->undefinedMsg("SPECIAL_COLORS", "arduino_day_b");
-      }
-#ifdef DEBUG
-    std::cout << "today is arduino day" << std::endl;
-#endif
-    }
-    // change color for pi day
-    else if (timeStr.find(this->pi_day) != std::string::npos) {
-      if(ini::get_int("SPECIAL_COLORS", "pi_day_r", &(this->r)) != 0){
-        this->undefinedMsg("SPECIAL_COLORS", "pi_day_r");
-      }
-      if(ini::get_int("SPECIAL_COLORS", "pi_day_g", &(this->g)) != 0){
-        this->undefinedMsg("SPECIAL_COLORS", "pi_day_g");
-      }
-      if(ini::get_int("SPECIAL_COLORS", "pi_day_b", &(this->b)) != 0){
-        this->undefinedMsg("SPECIAL_COLORS", "pi_day_b");
-      }
-#ifdef DEBUG
-    std::cout << "today is pi day" << std::endl;
-#endif
-    }
 
 #ifdef DEBUG
     std::cout << "time colors: " << this->r << ", " << this->g << ", " << this->b << std::endl;
@@ -566,28 +551,16 @@ namespace ledMatrixD {
     }
     this->dateBannerPath = banner_dir;
 
-    //get arduino_day config
-    char* arduino_day = NULL;
-    if(ini::get_string("SPECIAL_DATES","arduino_day", &(arduino_day)) != 0){
-      this->undefinedMsg("SPECIAL_DATES", "arduino_day");
+    // get special date format
+    char* special_format = NULL;
+    if(ini::get_string("DATE", "special_date_format", &(special_format)) != 0){
+      this->undefinedMsg("DATE", "special_date_format");
     }
-    this->arduino_day = arduino_day;
-    if(this->arduino_day[0] != '"' || this->arduino_day[this->arduino_day.size()-1] != '"'){
-      EXIT_MSG("ini config: arduino_day must be a string sorrounded by \" marks ");
+    this->special_date_format = special_format;
+    if(this->special_date_format[0] != '"' || this->special_date_format[this->special_date_format.size()-1] != '"'){
+      EXIT_MSG("ini config: special_date_format must be a string sorrounded by \" marks ");
     }else{
-      this->arduino_day = this->arduino_day.substr(1, this->arduino_day.size()-2);
-    }
-
-    //get pi_day config
-    char* pi_day = NULL;
-    if(ini::get_string("SPECIAL_DATES", "pi_day", &(pi_day)) != 0){
-      this->undefinedMsg("SPECIAL_DATES", "pi_day");
-    }
-    this->pi_day = pi_day;
-    if(this->pi_day[0] != '"' || this->pi_day[this->pi_day.size()-1] != '"'){
-      EXIT_MSG("ini config: pi_day must be a string sorrounded by \" marks ");
-    }else{
-      this->pi_day = this->pi_day.substr(1, this->pi_day.size()-2);
+      this->special_date_format = this->special_date_format.substr(1, this->special_date_format.size()-2);
     }
 
   }
@@ -618,50 +591,32 @@ namespace ledMatrixD {
     std::string dateStr = std::string(buf);
 
     //draw the string in buf
-#ifdef DEBUG
-    std::cout << "comparing " << buf << " for day banner " << std::endl;
-#endif
-
-
-    // show banner for special dates
-#ifdef DEBUG
-    std::cout << "arduino day? " << dateStr.find(this->arduino_day) << std::endl;
-#endif
-#ifdef DEBUG
-    std::cout << "pi day? " << dateStr.find(this->pi_day) << std::endl;
-#endif
-
     char* banner = NULL;
+    char secbuf[100];
+    time_t secrawtime;
+    struct tm * sectimeinfo;
+
+    time(&secrawtime);
+    sectimeinfo = localtime (&secrawtime);
+    //TODO: check and make sure format is correctly added here
+    strftime(secbuf, 100, this->special_date_format.c_str(), sectimeinfo);
+
+    char* secStr = secbuf;
 
     // populate date banner if necessary
-    if (dateStr.find(this->arduino_day) != std::string::npos) {
-      if(ini::get_string("SPECIAL_DATE_BANNERS", "arduino_day", &(banner)) != 0){
-        this->undefinedMsg("SPECIAL_DATE_BANNERS", "arduino_day");
+    if (ini::has_section(secStr)){
+      if(ini::get_string(secStr, "banner", &(banner)) != 0){
+        this->undefinedMsg(secStr, "banner");
       }
+      else{
 #ifdef DEBUG
-      std::cout << "preparing arduino day banner" << std::endl;
+        std::cout << "preparing banner for " << secStr << std::endl;
 #endif
-    }
-    else if (dateStr.find(this->pi_day) != std::string::npos) {
-      if(ini::get_string("SPECIAL_DATE_BANNERS", "pi_day", &(banner)) != 0){
-        this->undefinedMsg("SPECIAL_DATE_BANNERS", "pi_day");
-      }
-#ifdef DEBUG
-      std::cout << "preparing pi day banner" << std::endl;
-#endif
-    }
-    else {
-#ifdef DEBUG
-      std::cout << "no banner today: " << std::endl;
-#endif
+        this->loadImage(this->dateBannerPath + &banner[0]);
 
-    }
-
-    if (banner != NULL) {
-      this->loadImage(this->dateBannerPath + &banner[0]);
-
-      for(int i = 0; i < this->scrolls; i++){
-        this->scroll(this->scrollMS);
+        for(int i = 0; i < this->scrolls; i++){
+          this->scroll(this->scrollMS);
+        }
       }
     }
   }

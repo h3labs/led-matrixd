@@ -175,6 +175,7 @@ namespace ledMatrixD
       ~DateDisplay();
     private:
       std::string format;
+      std::string special_date_format;
       std::string fontFilename;
       std::string fontDir;
       rgb_matrix::Font font;
@@ -184,8 +185,6 @@ namespace ledMatrixD
       int r;
       int g;
       int b;
-      std::string arduino_day;
-      std::string pi_day;
   };
   class ShopStatusDisplay : public Display {
     public:
@@ -241,10 +240,9 @@ namespace ledMatrixD
       std::string getFullDateBannerPath();
       std::string dateBannerPath;
       std::string format;
+      std::string special_date_format;
       int scrolls;
       int scrollMS;
-      std::string arduino_day;
-      std::string pi_day;
   };
   void initLongSequence();
   void runLongSequence();
