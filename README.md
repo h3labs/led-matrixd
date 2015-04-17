@@ -1,3 +1,15 @@
+Neon Demon: The Demon that controls Shop Status
+===============================================
+
+Introduction
+------------
+
+Requirements to Compile
+-----------------------
+* libini-config2
+* libini-config-dev
+* libcollection-dev
+
 Controlling RGB LED display with Raspberry Pi GPIO
 ==================================================
 
