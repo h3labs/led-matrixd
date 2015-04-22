@@ -1,4 +1,7 @@
-CXXFLAGS=-Wall -g -O3
+CXXFLAGS=-Wall -g -O3 -DDEBUG -Iinclude
+SRCS=led-matrixd-main.cc Beacon.cc DisplaysSequence.cc ini-reader.cc
+OBJS=$(SRCS:.cc=.o)
+DEPS=$(SRCS:.cc=.d)
 BINARIES=led-matrix minimal-example text-example
 
 # Where our library resides. It is split between includes and the binary
@@ -9,23 +12,15 @@ RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lini_config
 
-all : $(BINARIES)
+all: led-matrixd
 
+led-matrixd: $(OBJS) $(RGB_LIBRARY)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+%.cc : %.h
 
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
-
-led-matrixd : led-matrixd-main.o OpenCloseSign.o ScriptRunner.o file-status-notification.o sign-long-sequence.o ini-reader.o $(RGB_LIBRARY)
-	$(CXX) $(CXXFLAGS) $^  -o $@ $(LDFLAGS)
-
-led-matrixd-main.o: sign-long-sequence.o ini-reader.o OpenCloseSign.o
-
-OpenCloseSign.o: file-status-notification.o
-
-ScriptRunner.o: file-status-notification.o
-
-sign-long-sequence.o: ini-reader.o
-
 
 led-matrix : demo-main.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) demo-main.o -o $@ $(LDFLAGS)
@@ -39,6 +34,16 @@ text-example : text-example.o $(RGB_LIBRARY)
 %.o : %.cc
 	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
 
+%.d: %.cc
+	@set -e; rm -f $@; \
+	$(CXX) -M -Iinclude $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
 clean:
-	rm -f $(OBJECTS) $(BINARIES)
+	rm -f *.o $(OBJECTS) $(BINARIES)
+	rm -f *.d
 	$(MAKE) -C lib clean
+
+-include $(DEPS)
+

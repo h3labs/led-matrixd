@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <string>
 extern "C" {
 	#include "ini_config.h"
 }
@@ -9,7 +11,7 @@ extern "C" {
 #define __INI_READER_H__
 
 namespace ini {
-  char* ini_file = "matrix.ini";
+  const char* ini_file = std::string("matrix.ini").c_str();
   struct ::collection_item* ini_config = NULL;
   struct ::collection_item* errors = NULL;
   struct ::collection_item* get_item(const char* section, const char* attribute){

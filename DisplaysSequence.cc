@@ -6,8 +6,7 @@
 #include <sys/time.h>
 #include "ini-reader.h"
 #include "graphics.h"
-#include "sign-long-sequence.h"
-#include "ScriptRunner.h"
+#include "DisplaysSequence.h"
 
 #include <iostream>
 #include <fstream>

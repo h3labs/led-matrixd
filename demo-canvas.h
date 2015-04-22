@@ -24,6 +24,13 @@
 
 #include <algorithm>
 
+#ifdef DEBUG
+#define DMSG(format, ...)\
+	printf("%s:%d %s() - " format, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
+#else
+#define DMSG(format, ...)
+#endif
+	
 
 using std::min;
 using std::max;

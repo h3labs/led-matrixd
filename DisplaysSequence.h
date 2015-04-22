@@ -1,5 +1,5 @@
-#ifndef __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
-#define __LED_MATRIX_D_SIGN_LONG_SEQUENCE_H__
+#ifndef __LED_MATRIX_D_DISPLAYS_SEQUENCE_H__
+#define __LED_MATRIX_D_DISPLAYS_SEQUENCE_H__
 
 #include <stdio.h>
 #include <stdlib.h>
