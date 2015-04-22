@@ -2,8 +2,10 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fstream>      // std::ifstream
 #include <iostream>
 #include <string.h>
+#include <vector>
 
 #include "ini-reader.h"
 #include "Beacon.h"
@@ -27,6 +29,7 @@ namespace ledMatrixD {
 	}
 
 	Beacon::Beacon(){
+		this->decodeMap['+'] = ' ';
 		this->fd = inotify_init();
 		if (this->fd == -1) {
 			perror("inotify_init1");
@@ -46,6 +49,13 @@ namespace ledMatrixD {
 			exit(EXIT_FAILURE);
 		}
 		this->updateScriptFilename = std::string(updateScriptFilename);
+		//get string for location of script file
+		char* restoreScriptFilename = NULL;
+		if(ini::get_string("FILE SYSTEM", "shop_status_restore_script", &restoreScriptFilename) != 0){
+			printf("ini config: could not find variable FILE SYSTEM > shop_status_restore_script");
+			exit(EXIT_FAILURE);
+		}
+		this->restoreScriptFilename = std::string(restoreScriptFilename);
 		//add inotify watch for directory
 		std::string dirname = ledMatrixD::path(this->shopStatusFilename);
 		std::string filename = ledMatrixD::basename(this->shopStatusFilename);
@@ -94,6 +104,13 @@ namespace ledMatrixD {
 		//stop the threaded created by this class
 		*this->terminate = true;
 		//find a way to wake up notificator
+	}
+	std::string Beacon::getParameter(std::string key){
+		auto it = this->parameters.find(key);
+		if(it != this->parameters.end()){
+			return it->second;
+		}
+		return std::string("");
 	}
 	void Beacon::waitForINotifyEvents()
 	{
@@ -184,37 +201,161 @@ namespace ledMatrixD {
 		//call the script and update website
 		switch(updateType){
 			case 0:
-				this->open = false;
+				//if the demon has just started and there was no file
+				//then call script to recreate the file
+				this->callRestoreScript();
+				this->readParameters();
 				break;
 			case 1:
-				this->open = true;
+				//if the demon has just started and there is a file
+				//then check if the modify time of the file is < 5 min ago
+				//then call update script
+				DMSG("%f seconds since shop status file was modified\n", this->secondsSinceModified(this->shopStatusFilename));
+				if(this->secondsSinceModified(this->shopStatusFilename) < (5*60))
+				{
+					this->readParameters();
+					this->callUpdateScript();
+				}
 				break;
-			case 2:
-				this->open = true;
+			case 2: 
+				//if the file gets created
+				//then call update script
+				this->readParameters();
+				this->callUpdateScript();
 				break;
-			case 3:
-				this->open = false;
+			case 3: 
+				//if the file get deleted
+				//then call script to recreate the file
+				//then call update script
+				this->callRestoreScript();
+				this->readParameters();
+				break;
+			case 4:
+				//if the file gets modified
+				//then call update script
+				this->readParameters();
+				this->callUpdateScript();
+				break;
+			case 5:
+				//if the file gets its time attribute modified
+				//then call update script
+				//TODO: fix this
+				if(this->secondsSinceModified(this->shopStatusFilename) < (1)){
+					this->readParameters();
+					this->callUpdateScript();
+				}
 				break;
 			default:
 				DMSG("Event did not correspond to any type possibility\n");
 				exit(EXIT_FAILURE);
 		}
-		//call update script
-		pid_t pid;
-		pid = fork ();
-		if(pid == 0){
-			DMSG("(child) running script\n");
-			if(this->open){
-				DMSG("(child) %s [open]\n", this->updateScriptFilename.c_str());
-				execl(this->updateScriptFilename.c_str(), "open", NULL);
-				exit(EXIT_FAILURE);
-			}else{
-				DMSG("(child) %s [closed]\n", this->updateScriptFilename.c_str());
-				execl(this->updateScriptFilename.c_str(), "closed", NULL);
+		DMSG("Checking whether to terminate\n");
+		if(*this->terminate){
+			DMSG("terminate\n");
+			exit(0);
+		}
+		DMSG("Termination not signaled\n");
+	}
+	void Beacon::readParameters()
+	{
+		std::ifstream ifs;
+		std::string url;
+		char c;
+		//Read shop status file in
+		ifs.open (this->shopStatusFilename.c_str(), std::ifstream::in);
+		if(ifs.fail()){
+			DMSG("Could not open file \"%s\"\n", this->shopStatusFilename.c_str());
+			//TODO clean parameters map
+			return;
+		}
+		while(ifs.get(c)){
+			url += c;
+		}
+		DMSG("Contents of file are \"%s\"\n", url.c_str());
+		ifs.close();
+		//Sanitize string by removing \n, \tabs, an the changing %[A-Z0-9]{2} to their respective characters
+		//Actually don't remove \n anymore just do the changing
+		//Decode URL
+		std::string decodedURL = this->decode(url);
+		DMSG("Decoded URL is \"%s\"\n", decodedURL.c_str());
+		//Split and map variables
+		DMSG("Spliting URL\n");
+		std::string del = "&";
+		std::vector<std::string> params = this->split(decodedURL, del);
+		//Process each parameter
+		del = "=";
+		//Erase all parameters
+		this->parameters.erase(this->parameters.begin(), this->parameters.end());	
+		for(auto it = params.begin(); it != params.end(); ++it){
+			std::vector<std::string> kv = this->split(*it, del);
+			if(kv.size() != 2){
+				DMSG("Parameters has been wrongly specified exiting");
 				exit(EXIT_FAILURE);
 			}
+			std::string key = kv[0];
+			std::string value = kv[1];
+			value = this->processReservedCharacters(value);
+			this->parameters[key] = value;
+			DMSG("Parameters %s = \"%s\" (%ld) \n", key.c_str(), value.c_str(), parameters.size());
+		}
+	}
+	std::vector<std::string> Beacon::split(std::string& str, std::string& del)
+	{
+		size_t pos = 0;
+		std::vector<std::string> strings;
+		while(true){
+			size_t first = str.find(del, pos);
+			if(first==std::string::npos){
+				std::string token = str.substr(pos);
+				if (token.compare("")){
+					//DMSG("Adding token \"%s\"\n", token.c_str());
+					strings.push_back(token);
+				}
+				break;
+			}
+			//found something so add that to vector
+			std::string token = str.substr(pos, first-pos);
+			//DMSG("Adding token \"%s\"\n", token.c_str());
+			strings.push_back(token);
+			pos = first + del.length();
+		}
+		return strings;
+	}
+	std::string Beacon::decode(std::string& str)
+	{
+		std::string dstr = "";
+		std::string::iterator it = str.begin();
+		std::string::iterator eit = str.end();
+		std::string::iterator it1;
+		std::string::iterator it2;
+		DMSG("Begin decoding URL string \"%s\"", str.c_str());
+		while(it != eit){
+			int cdec = this->getPercentEncoded(it, eit);
+			if(cdec == -1){
+				//check if any of the characters spec
+				//DMSG("got character \"%c\"\n", (char)*it);
+				dstr += *it;
+				it++;
+			}else{
+				//convert and advance iterator 3 times
+				//DMSG("got string \"%c\"\n", (char)cdec);
+				dstr += cdec;
+				it = std::next(it, 3);;
+			}
+		}
+		return dstr;
+	}
+	void Beacon::callUpdateScript()
+	{
+		//call update script
+		pid_t pid;
+		pid = fork();
+		if(pid == 0){
+			DMSG("(child) %s [%s]\n", this->updateScriptFilename.c_str(), "");
+			execl(this->updateScriptFilename.c_str(), "update.sh", this->shopStatusFilename.c_str(), NULL);
+			exit(EXIT_FAILURE);
 		}else if(pid < 0){
-			DMSG("(parent) child not created... unable to call script \"%s\"", this->updateScriptFilename.c_str());
+			DMSG("(parent) child not created... unable to call script \"%s\"", this->shopStatusFilename.c_str());
 		}else{
 			int status;
 			DMSG("(parent) waiting...\n");
@@ -224,11 +365,25 @@ namespace ledMatrixD {
 				DMSG("(parent) child arrived!\n");
 			}
 		}
-		DMSG("(parent) checking whether to terminate\n");
-		if(*this->terminate){
-			DMSG("terminate\n");
-			exit(0);
+	}
+	void Beacon::callRestoreScript()
+	{
+		pid_t pid;
+		pid = fork ();
+		if(pid == 0){
+			DMSG("(child) %s\n", this->restoreScriptFilename.c_str());
+			execl(this->restoreScriptFilename.c_str(), "restore.sh", this->shopStatusFilename.c_str(), NULL);
+			exit(EXIT_FAILURE);
+		}else if(pid < 0){
+			DMSG("(parent) child not created... unable to call script \"%s\"", this->restoreScriptFilename.c_str());
+		}else{
+			int status;
+			DMSG("(parent) waiting...\n");
+			if(waitpid (pid, &status, 0) != pid){
+				DMSG("(parent) something's wrong...\n");
+			}else{
+				DMSG("(parent) child arrived!\n");
+			}
 		}
-		DMSG("(parent) did not terminate\n");
 	}
 }

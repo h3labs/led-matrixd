@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -g -O3 -DDEBUG -Iinclude
+CXXFLAGS=-Wall -g -O3 -DDEBUG -Iinclude -std=c++0x
 SRCS=led-matrixd-main.cc Beacon.cc DisplaysSequence.cc ini-reader.cc
 OBJS=$(SRCS:.cc=.o)
 DEPS=$(SRCS:.cc=.d)
@@ -36,7 +36,7 @@ text-example : text-example.o $(RGB_LIBRARY)
 
 %.d: %.cc
 	@set -e; rm -f $@; \
-	$(CXX) -M -Iinclude $< > $@.$$$$; \
+	$(CXX) -M $(CXXFLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 

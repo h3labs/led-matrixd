@@ -86,13 +86,13 @@ int main(int argc, char* argv[])
 	//    case 1:
 	beacon = new ledMatrixD::Beacon();
 	beacon->run();
+	/*
 	while(true){
 		sleep(3);
 		DMSG("waiting...\n");
 	}
-	/*
-	   ledMatrixD::runLongSequence();
-	   */
+	*/
+	ledMatrixD::runLongSequence();
 	beacon->stop();
 	//      break;
 	//  }
