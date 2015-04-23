@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/dir.h>
 #include <sys/time.h>
-#include "ini-reader.h"
+#include "INIReader.h"
 #include "graphics.h"
 #include "DisplaysSequence.h"
 

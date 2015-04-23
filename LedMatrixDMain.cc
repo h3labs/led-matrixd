@@ -1,6 +1,6 @@
 #include "Beacon.h"
-#include "ini-reader.h"
-#include "led-matrixd-main.h"
+#include "INIReader.h"
+#include "LedMatrixDMain.h"
 #include "demo-canvas.h"
 #include "DisplaysSequence.h"
 

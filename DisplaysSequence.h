@@ -8,7 +8,7 @@
 #include <iostream>
 #include <map>
 #include "graphics.h"
-#include "led-matrixd-main.h"
+#include "LedMatrixDMain.h"
 
 #define EXIT_MSG(m) {\
   std::cerr << "error: " << __FILE__ << ":" << __LINE__ << " " << m << std::endl;\

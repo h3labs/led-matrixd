@@ -1,5 +1,5 @@
 CXXFLAGS=-Wall -g -O3 -DDEBUG -Iinclude -std=c++0x
-SRCS=led-matrixd-main.cc Beacon.cc DisplaysSequence.cc ini-reader.cc
+SRCS=LedMatrixDMain.cc Beacon.cc DisplaysSequence.cc INIReader.cc
 OBJS=$(SRCS:.cc=.o)
 DEPS=$(SRCS:.cc=.d)
 BINARIES=led-matrix minimal-example text-example

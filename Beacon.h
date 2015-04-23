@@ -12,8 +12,9 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <vector>
 
-#include "led-matrixd-main.h"
+#include "LedMatrixDMain.h"
 
 namespace ledMatrixD {
 
@@ -92,6 +93,7 @@ namespace ledMatrixD {
 		std::string updateScriptFilename;
 		std::string restoreScriptFilename;
 		std::map<char, char> decodeMap;
+		std::vector<int> ignoreIEventQuantity;
 		std::map<std::string, std::string> parameters;
 		bool* terminate;
 		bool open;

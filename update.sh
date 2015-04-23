@@ -10,11 +10,11 @@ if [ -e  "$beacon" ]; then
 	#EOF
 	echo "updated $beacon"
 else
-	echo "updated $beacon"
 	#	echo "beacon is absent"
 	#	ssh hlaborat@h3laboratories.com << EOF
 	#date
 	#rm shopisopen.beacon
 	#EOF
+	echo "updated $beacon"
 fi
 

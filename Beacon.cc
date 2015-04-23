@@ -7,7 +7,7 @@
 #include <string.h>
 #include <vector>
 
-#include "ini-reader.h"
+#include "INIReader.h"
 #include "Beacon.h"
 
 namespace ledMatrixD {
@@ -29,7 +29,10 @@ namespace ledMatrixD {
 	}
 
 	Beacon::Beacon(){
+		//characters to decode as
 		this->decodeMap['+'] = ' ';
+		//quntity of times to ignore events received
+		this->ignoreIEventQuantity = std::vector<int>(5,0);
 		this->fd = inotify_init();
 		if (this->fd == -1) {
 			perror("inotify_init1");
@@ -220,19 +223,39 @@ namespace ledMatrixD {
 			case 2: 
 				//if the file gets created
 				//then call update script
+				if(this->ignoreIEventQuantity[2] > 0){
+					DMSG("Ignore I event because another event triggered this\n");
+					this->ignoreIEventQuantity[2]--;
+					break;
+				}
 				this->readParameters();
 				this->callUpdateScript();
 				break;
 			case 3: 
 				//if the file get deleted
+				//ignore a create and modify event
 				//then call script to recreate the file
 				//then call update script
+				if(this->ignoreIEventQuantity[3] > 0){
+					DMSG("Ignore I event because another event triggered this\n");
+					this->ignoreIEventQuantity[3]--;
+					break;
+				}
+				this->ignoreIEventQuantity[2]++;
+				this->ignoreIEventQuantity[4]++;
 				this->callRestoreScript();
 				this->readParameters();
+				this->callUpdateScript();
 				break;
 			case 4:
 				//if the file gets modified
 				//then call update script
+				if(this->ignoreIEventQuantity[4] > 0){
+					DMSG("Ignore I event because another event triggered this\n");
+					this->ignoreIEventQuantity[4]--;
+					break;
+				}
+				this->ignoreIEventQuantity[4]++;
 				this->readParameters();
 				this->callUpdateScript();
 				break;
@@ -240,6 +263,11 @@ namespace ledMatrixD {
 				//if the file gets its time attribute modified
 				//then call update script
 				//TODO: fix this
+				if(this->ignoreIEventQuantity[5] > 0){
+					DMSG("Ignore I event because another event triggered this\n");
+					this->ignoreIEventQuantity[5]--;
+					break;
+				}
 				if(this->secondsSinceModified(this->shopStatusFilename) < (1)){
 					this->readParameters();
 					this->callUpdateScript();
