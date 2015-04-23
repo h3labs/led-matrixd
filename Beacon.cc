@@ -73,8 +73,25 @@ namespace ledMatrixD {
 		this->terminate = (bool*)mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 		if(this->terminate == MAP_FAILED){
 			DMSG("mmap() failed unable to allocate shared memory\n");
+			perror("mmap()");
+			exit(EXIT_FAILURE);
 		}
 		*this->terminate = false;
+		this->messageStore = (MessageStore*)mmap(NULL, sizeof(MessageStore), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+		if(this->messageStore == MAP_FAILED){
+			DMSG("mmap() failed unable to allocate shared memory\n");
+			perror("mmap()");
+			exit(EXIT_FAILURE);
+		}
+		DMSG("Size of MessageStore is %lu\n", sizeof(MessageStore));
+		DMSG("Size of MessageStore->msg is %lu\n", sizeof(this->messageStore->msg));
+		if(sem_init(&(this->messageStore->done), 1, 1) != 0){
+			DMSG("sem_init() failed\n");
+			perror("sem_init()");
+			exit(EXIT_FAILURE);
+		}
+		this->messageStore->msg[0] = '\0';
+		//initialize message memory
 		std::string fullPathFilename = dirname + "/" + filename;
 		if(checkFileExists(fullPathFilename)){
 			this->update(1);
@@ -87,9 +104,9 @@ namespace ledMatrixD {
 		//for a process that will run a loop to wait for inotify events
 		//to happen in the directory of the beacon file
 		DMSG("Run loop to observe if something has changed in beacon file\n");
-		pid_t id = fork();
-		if(id >= 0){
-			if(id == 0){
+		this->id = fork();
+		if(this->id >= 0){
+			if(this->id == 0){
 				DMSG("(child) process started\n");
 				this->waitForINotifyEvents();
 				munmap(this->terminate, sizeof(bool));
@@ -108,12 +125,41 @@ namespace ledMatrixD {
 		*this->terminate = true;
 		//find a way to wake up notificator
 	}
-	std::string Beacon::getParameter(std::string key){
-		auto it = this->parameters.find(key);
-		if(it != this->parameters.end()){
-			return it->second;
+	std::string Beacon::getMessage(){
+		std::string rstr;
+		if(this->id == 0){
+			const char* msg;
+			auto it = this->parameters.find("msg");
+			if(it != this->parameters.end()){
+				msg = it->second.c_str();
+			}else{
+				msg = std::string("").c_str();
+			}
+			size_t maxMsgSize = sizeof(this->messageStore->msg);
+			size_t len = strlen(msg);
+			sem_wait(&(this->messageStore->done));
+				//copy the message interprocess here
+				DMSG("Writing message on shared memory \"%s\"\n", msg);
+				strncpy(&(this->messageStore->msg[0]), msg, maxMsgSize);
+				if(len >= maxMsgSize){
+					this->messageStore->msg[maxMsgSize-1] = '\0';
+				}
+			sem_post(&(this->messageStore->done));
+		}else{
+			//parent process reads memory
+			sem_wait(&(this->messageStore->done));
+			if(this->messageStore->msg[0] == '\0'){
+				//there is no message so continue
+				DMSG("There is not message yet\n");
+				rstr = std::string("");
+			}else{
+				//there is a message so read it
+				DMSG("Reading message from shared memory\"%s\"\n", &(this->messageStore->msg[0]));
+				rstr = std::string(&(this->messageStore->msg[0]));
+			}
+			sem_post(&(this->messageStore->done));
 		}
-		return std::string("");
+		return rstr;
 	}
 	void Beacon::waitForINotifyEvents()
 	{
@@ -316,16 +362,24 @@ namespace ledMatrixD {
 		this->parameters.erase(this->parameters.begin(), this->parameters.end());	
 		for(auto it = params.begin(); it != params.end(); ++it){
 			std::vector<std::string> kv = this->split(*it, del);
-			if(kv.size() != 2){
-				DMSG("Parameters has been wrongly specified exiting");
+			std::string key;
+			std::string value;
+			if(kv.size() == 2){
+				key = kv[0];
+				value = kv[1];
+			}else if(kv.size() == 1){
+				key = kv[0];
+				value = "";
+			}else{
+				DMSG("Parameters has been wrongly specified exiting (%lu)", kv.size());
 				exit(EXIT_FAILURE);
 			}
-			std::string key = kv[0];
-			std::string value = kv[1];
 			value = this->processReservedCharacters(value);
 			this->parameters[key] = value;
 			DMSG("Parameters %s = \"%s\" (%ld) \n", key.c_str(), value.c_str(), parameters.size());
 		}
+		//write the message for other process to get
+		this->getMessage();
 	}
 	std::vector<std::string> Beacon::split(std::string& str, std::string& del)
 	{

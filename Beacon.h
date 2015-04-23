@@ -8,6 +8,7 @@
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <semaphore.h>
 
 #include <string>
 #include <fstream>
@@ -19,13 +20,19 @@
 namespace ledMatrixD {
 
 	class Beacon {
+		typedef struct {
+			//TODO this will have synchronization problems sometimes
+			//should implements better k
+			sem_t done;
+			char msg[400];
+		} MessageStore;
 		private:
 		int fd;
 		public:
 		Beacon();
 		void run();
 		void stop();
-		std::string getParameter(std::string key);
+		std::string getMessage();
 		private:
 		void waitForINotifyEvents();
 		void processINotifyEvents();
@@ -95,6 +102,8 @@ namespace ledMatrixD {
 		std::map<char, char> decodeMap;
 		std::vector<int> ignoreIEventQuantity;
 		std::map<std::string, std::string> parameters;
+		MessageStore* messageStore;
+		pid_t id;
 		bool* terminate;
 		bool open;
 	};

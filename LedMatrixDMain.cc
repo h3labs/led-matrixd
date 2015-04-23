@@ -89,7 +89,9 @@ int main(int argc, char* argv[])
 	/*
 	while(true){
 		sleep(3);
-		DMSG("waiting...\n");
+		//THIS IS how to read message if there is any
+		std::string msg = beacon->getMessage();
+		DMSG("waiting... with message \"%s\"\n", msg.c_str());
 	}
 	*/
 	ledMatrixD::runLongSequence();
