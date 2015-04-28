@@ -675,6 +675,7 @@ namespace ledMatrixD {
 				const uint32_t cp = utf8_next_codepoint(utf8_text);
 				x += font.DrawGlyph(canvas, -x, mid_y, color, cp);
 			}
+			this->wait(100);
 		}
 	}
 	/**
