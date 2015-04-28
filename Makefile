@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -g -O3 -DDEBUG -Iinclude -std=c++0x
+CXXFLAGS=-Wall -g -O3 -DDEBUG -std=c++0x
 SRCS=$(addprefix src/,LedMatrixDMain.cc Beacon.cc DisplaysSequence.cc INIReader.cc)
 OBJS=$(SRCS:.cc=.o)
 DEPS=$(SRCS:.cc=.d)
@@ -12,11 +12,12 @@ BINARIES=led-matrix minimal-example text-example
 
 # Where our library resides. It is split between includes and the binary
 # library in lib
-RGB_INCDIR=src/include
-RGB_LIBDIR=lib
+RGB_INCDIR=include/
+RGB_LIBDIR=lib/
 RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lini_config
+CXXFLAGS+=-I$(RGB_INCDIR) -I$(RGB_LIBDIR)
 
 all: led-matrixd
 
@@ -51,7 +52,7 @@ text-example : src/text-example.o $(RGB_LIBRARY)
 	$(CXX) $(CXXFLAGS) text-example.o -o $@ $(LDFLAGS)
 
 %.o : %.cc
-	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
 
 %.d: %.cc
 	@set -e; rm -f $@; \

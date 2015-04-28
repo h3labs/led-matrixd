@@ -24,15 +24,8 @@ static const uint32_t kUnicodeReplacementCodepoint = 0xFFFD;
 
 // Bitmap for one row. This limits the number of available columns.
 // Make wider if running into trouble.
-typedef uint32_t rowbitmap_t;
 
 namespace rgb_matrix {
-struct Font::Glyph {
-  int width, height;
-  int y_offset;
-  rowbitmap_t bitmap[0];  // contains 'height' elements.
-};
-
 Font::Font() : font_height_(-1) {}
 Font::~Font() {
   for (CodepointGlyphMap::iterator it = glyphs_.begin();

@@ -12,6 +12,8 @@
 #include <map>
 #include <stdint.h>
 
+typedef uint32_t rowbitmap_t;
+
 namespace rgb_matrix {
 struct Color {
   Color(uint8_t rr, uint8_t gg, uint8_t bb) : r(rr), g(gg), b(bb) {}
@@ -23,7 +25,14 @@ struct Color {
 // Font loading bdf files. If this ever becomes more types, just make virtual
 // base class.
 class Font {
+
+
 public:
+	struct Glyph {
+	  int width, height;
+	  int y_offset;
+	  rowbitmap_t bitmap[0];  // contains 'height' elements.
+	};
   // Initialize font, but it is only usable after LoadFont() has been called.
   Font();
   ~Font();
@@ -48,11 +57,10 @@ public:
   // character or 0 if we didn't draw any chracter.
   int DrawGlyph(Canvas *c, int x, int y, const Color &color,
                 uint32_t unicode_codepoint) const;
+  const Glyph *FindGlyph(uint32_t codepoint) const;
 private:
-  struct Glyph;
   typedef std::map<uint32_t, Glyph*> CodepointGlyphMap;
 
-  const Glyph *FindGlyph(uint32_t codepoint) const;
 
   int font_height_;
   int base_line_;
