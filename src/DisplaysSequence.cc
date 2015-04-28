@@ -666,16 +666,39 @@ namespace ledMatrixD {
 		int sum_of_elems = 0;
 		for(auto it = this->widths.begin(); it != this->widths.end(); ++it)
 			    sum_of_elems += *it;
-		int mid_y = canvas->height() / 2;
-		utf8_text = message.c_str();
-		rgb_matrix::Color color(255, 255, 255);
+		int mid_y = canvas->height() / 2 + (this->font.height() / 2);
+		rgb_matrix::Color white(255, 255, 255);
+		rgb_matrix::Color black(0, 0, 0);
 		for(int x = 0; x < sum_of_elems; x++){
 			//draw the string
+			utf8_text = message.c_str();
+			int i = 0;
+			int xp = 0;
 			while (*utf8_text) {
+				if((-x + xp) > canvas->width())
+					break;
+				else if((-x + xp + this->widths[i]) < 0)
+					continue;
+				//else draw the character
 				const uint32_t cp = utf8_next_codepoint(utf8_text);
-				x += font.DrawGlyph(canvas, -x, mid_y, color, cp);
+				xp += font.DrawGlyph(canvas, -x + xp, mid_y, white, cp);
+				i += 1;
 			}
 			this->wait(100);
+			//clear the string
+			utf8_text = message.c_str();
+			i = 0;
+			xp = 0;
+			while (*utf8_text) {
+				if((-x + xp) > canvas->width())
+					break;
+				else if((-x + xp + this->widths[i]) < 0)
+					continue;
+				//else draw the character
+				const uint32_t cp = utf8_next_codepoint(utf8_text);
+				xp += font.DrawGlyph(canvas, -x + xp, mid_y , black, cp);
+				i += 1;
+			}
 		}
 	}
 	/**
