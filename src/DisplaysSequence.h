@@ -18,6 +18,7 @@
 namespace ledMatrixD
 {
 	extern Canvas* canvas;
+  extern Beacon* beacon;
 	class Display {
 		public:
 			Display();
@@ -255,6 +256,7 @@ namespace ledMatrixD
 			rgb_matrix::Font font;
 			std::string message;
 			std::vector<int> widths;
+      int sumOfWidths;
 			int scrolls;
 			int scrollMS;
 	};

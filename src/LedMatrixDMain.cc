@@ -77,14 +77,13 @@ int main(int argc, char* argv[])
 	ini::read_file(ini::ini_file);
 	DMSG("Succesfully read INI file\n");
 	//  ledMatrixD::OpenCloseSign* openClose = NULL;
-	ledMatrixD::Beacon* beacon = NULL;
 	//  switch(sequence){
 	//    case 0:
 	//      openClose = new ledMatrixD::OpenCloseSign();
 	//      openClose->run();
 	//      break;
 	//    case 1:
-	beacon = new ledMatrixD::Beacon();
+  ledMatrixD::beacon = new ledMatrixD::Beacon();
 	beacon->run();
 	/*
 	while(true){
