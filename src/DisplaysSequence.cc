@@ -678,11 +678,13 @@ namespace ledMatrixD {
 				if((-x + xp) > canvas->width())
 					break;
 				else if((-x + xp + this->widths[i]) < 0)
+					xp += this->widths[i];
+					i++;
 					continue;
 				//else draw the character
 				const uint32_t cp = utf8_next_codepoint(utf8_text);
 				xp += font.DrawGlyph(canvas, -x + xp, mid_y, white, cp);
-				i += 1;
+				i++;
 			}
 			this->wait(100);
 			//clear the string
@@ -693,6 +695,8 @@ namespace ledMatrixD {
 				if((-x + xp) > canvas->width())
 					break;
 				else if((-x + xp + this->widths[i]) < 0)
+					xp += this->widths[i];
+					i++;
 					continue;
 				//else draw the character
 				const uint32_t cp = utf8_next_codepoint(utf8_text);
