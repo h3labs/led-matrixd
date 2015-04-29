@@ -674,30 +674,36 @@ namespace ledMatrixD {
 			utf8_text = message.c_str();
 			int i = 0;
 			int xp = 0;
+			DMSG("Drawing White\n");
 			while (*utf8_text) {
-				if((-x + xp) > canvas->width())
+				if((-x + xp) > canvas->width()){
 					break;
-				else if((-x + xp + this->widths[i]) < 0)
+				}else if((-x + xp + this->widths[i]) < 0){
 					xp += this->widths[i];
+					utf8_next_codepoint(utf8_text);
 					i++;
 					continue;
+				}
 				//else draw the character
 				const uint32_t cp = utf8_next_codepoint(utf8_text);
 				xp += font.DrawGlyph(canvas, -x + xp, mid_y, white, cp);
 				i++;
 			}
-			this->wait(100);
+			this->wait(this->scrollMS);
 			//clear the string
 			utf8_text = message.c_str();
 			i = 0;
 			xp = 0;
+			DMSG("Drawing Black\n");
 			while (*utf8_text) {
-				if((-x + xp) > canvas->width())
+				if((-x + xp) > canvas->width()){
 					break;
-				else if((-x + xp + this->widths[i]) < 0)
+				}else if((-x + xp + this->widths[i]) < 0){
 					xp += this->widths[i];
+					utf8_next_codepoint(utf8_text);
 					i++;
 					continue;
+				}
 				//else draw the character
 				const uint32_t cp = utf8_next_codepoint(utf8_text);
 				xp += font.DrawGlyph(canvas, -x + xp, mid_y , black, cp);
