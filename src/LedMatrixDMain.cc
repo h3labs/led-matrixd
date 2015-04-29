@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 				   exit(EXIT_FAILURE);
 				   }
 				   break;
-				   */
+				 */
 			case '?':
 			default:
 				usage("");
@@ -83,18 +83,18 @@ int main(int argc, char* argv[])
 	//      openClose->run();
 	//      break;
 	//    case 1:
-  ledMatrixD::beacon = new ledMatrixD::Beacon();
-	beacon->run();
+	ledMatrixD::beacon = new ledMatrixD::Beacon();
+	ledMatrixD::beacon->run();
 	/*
-	while(true){
-		sleep(3);
-		//THIS IS how to read message if there is any
-		std::string msg = beacon->getMessage();
-		DMSG("waiting... with message \"%s\"\n", msg.c_str());
+	   while(true){
+	   sleep(3);
+	//THIS IS how to read message if there is any
+	std::string msg = beacon->getMessage();
+	DMSG("waiting... with message \"%s\"\n", msg.c_str());
 	}
-	*/
+	 */
 	ledMatrixD::runLongSequence();
-	beacon->stop();
+	ledMatrixD::beacon->stop();
 	//      break;
 	//  }
 	return 0;

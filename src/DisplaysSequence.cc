@@ -645,7 +645,7 @@ namespace ledMatrixD {
     if(!this->font.LoadFont(fontFullpath.c_str())){
       EXIT_MSG("ini config: could not load specified font file MESSAGE > message_font");
     }
-    this->message = beacon->getMes\sage();
+    this->message = beacon->getMessage();
   }
 
   void MessageDisplay::show(){
@@ -658,12 +658,13 @@ namespace ledMatrixD {
     int midY = canvas->height() / 2 + (this->font.height() / 2);
     rgb_matrix::Color white(255, 255, 255);
     rgb_matrix::Color black(0, 0, 0);
+	const char *utf8_text = NULL;
     for(int s = 0; s < this->scrolls; s++){
       std::string newMessage = beacon->getMessage();
       if(!this->message.compare(newMessage)){
         this->message = newMessage;
-        DMSG("Got new message \'%s\'\n", this->message);
-        const char *utf8_text = message.c_str();
+        DMSG("Got new message \'%s\'\n", this->message.c_str());
+        utf8_text = message.c_str();
         this->widths.clear();	
         while (*utf8_text) {
           DMSG("Character \'%c\' ", *utf8_text);

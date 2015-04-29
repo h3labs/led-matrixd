@@ -9,6 +9,7 @@
 #include <map>
 #include "graphics.h"
 #include "LedMatrixDMain.h"
+#include "Beacon.h"
 
 #define EXIT_MSG(m) {\
 	std::cerr << "error: " << __FILE__ << ":" << __LINE__ << " " << m << std::endl;\
