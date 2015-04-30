@@ -1,6 +1,6 @@
 #!/bin/bash
 #exit
-beacon="/home/pi/signcfg/spaceapi.beacon"
+beacon="$1"
 
 open_tags="#makerspace #hackerspace #elpaso"
 closed_tags="#elpaso"
@@ -14,7 +14,6 @@ then
 EOF
 	echo ${c}
 	d=`date +'%I:%M %P' | xargs`
-
 	if [[ $c == *"&state=open"* ]]
 	then
 		s="OPEN"

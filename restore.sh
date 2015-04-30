@@ -28,7 +28,7 @@ if [ ! -e  "$beacon" ]
 then
 	t=$(date -u)
 	u="Neon"
-	out=$(urlencode "user=$u&time=$t&state=CLOSED")
+	out=$(urlencode "user=$u&time=$t&state=closed")
 	echo "restoring with \"$out\""
 	echo -n "$out" > "$beacon"
 fi

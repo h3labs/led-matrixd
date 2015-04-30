@@ -672,6 +672,7 @@ namespace ledMatrixD {
 		const char *utf8_text = NULL;
 		for(int s = 0; s < this->scrolls; s++){
 			std::string newMessage = beacon->getMessage();
+			canvas->Clear();
 			DMSG("Message sroll %d\n", s);
 			if(this->message.compare(newMessage)){
 				this->message = newMessage;
@@ -795,6 +796,7 @@ namespace ledMatrixD {
 			   new TitleDisplay(),
 			   new TwitterDisplay()
 			   ------------------
+			   */
 
 			   new TitleDisplay(),
 
@@ -805,6 +807,7 @@ namespace ledMatrixD {
 			   new DateDisplay(),
 			   new TitleDisplay(),
 			   new ShopStatusDisplay(),
+			new MessageDisplay(),
 
 			   new TaglineDisplay(),
 			   new ConwaysDisplay(),
@@ -812,9 +815,8 @@ namespace ledMatrixD {
 
 			   new DateBannerDisplay(),
 			   new TwitterDisplay(),
-			   new RandomSpriteDisplay()
-			   */
-			new MessageDisplay()
+			   new RandomSpriteDisplay(),
+				new MessageDisplay()
 		};
 		std::vector<Display*> displaysVector(displays, displays + (sizeof(displays) / sizeof(Display*)));
 		for(std::vector<Display*>::iterator it = displaysVector.begin(); it != displaysVector.end();){
