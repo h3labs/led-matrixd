@@ -32,6 +32,7 @@ namespace ledMatrixD {
 		Beacon();
 		void run();
 		void stop();
+		bool getOpen();
 		std::string getMessage();
 		private:
 		void waitForINotifyEvents();
@@ -105,7 +106,7 @@ namespace ledMatrixD {
 		MessageStore* messageStore;
 		pid_t id;
 		bool* terminate;
-		bool open;
+		bool* open;
 	};
 }
 

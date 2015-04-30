@@ -77,6 +77,13 @@ namespace ledMatrixD {
 			exit(EXIT_FAILURE);
 		}
 		*this->terminate = false;
+		this->open = (bool*)mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+		if(this->open == MAP_FAILED){
+			DMSG("mmap() failed unable to allocate shared memory\n");
+			perror("mmap()");
+			exit(EXIT_FAILURE);
+		}
+		*this->open = false;
 		this->messageStore = (MessageStore*)mmap(NULL, sizeof(MessageStore), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 		if(this->messageStore == MAP_FAILED){
 			DMSG("mmap() failed unable to allocate shared memory\n");
@@ -124,6 +131,9 @@ namespace ledMatrixD {
 		//stop the threaded created by this class
 		*this->terminate = true;
 		//find a way to wake up notificator
+	}
+	bool Beacon::getOpen(){
+		return *(this->open);
 	}
 	std::string Beacon::getMessage(){
 		std::string rstr;
@@ -379,6 +389,17 @@ namespace ledMatrixD {
 			value = this->processReservedCharacters(value);
 			this->parameters[key] = value;
 			DMSG("Parameters %s = \"%s\" (%ld) \n", key.c_str(), value.c_str(), parameters.size());
+		}
+		//read open or closed from state if available
+		auto it = this->parameters.find("state");
+		if(it != this->parameters.end()){
+			if(!it->second.compare("open")){
+				*(this->open) = true;
+			}else if(!it->second.compare("closed")){
+				*(this->open) = false;
+			}else{
+				DMSG("This state in beacon is not recognized [%s]\n", it->second.c_str());
+			}
 		}
 		//write the message for other process to get
 		this->getMessage();
