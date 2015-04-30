@@ -30,7 +30,7 @@ namespace ledMatrixD
 				unsigned int msecs = (msecs_ * 1000) % 1000000;
 				unsigned int secs = (msecs_ * 1000) / 1000000;
 #ifdef DEBUG
-				std::cout << "Sleeping: " << secs << "s " << msecs << "us" << std::endl;
+				//std::cout << "Sleeping: " << secs << "s " << msecs << "us" << std::endl;
 #endif
 				sleep(secs);
 				usleep((useconds_t)msecs);

@@ -150,11 +150,11 @@ namespace ledMatrixD {
 			sem_wait(&(this->messageStore->done));
 			if(this->messageStore->msg[0] == '\0'){
 				//there is no message so continue
-				DMSG("There is not message yet\n");
+				//DMSG("There is not message yet\n");
 				rstr = std::string("");
 			}else{
 				//there is a message so read it
-				DMSG("Reading message from shared memory\"%s\"\n", &(this->messageStore->msg[0]));
+				DMSG("Reading message from shared memory \"%s\"\n", &(this->messageStore->msg[0]));
 				rstr = std::string(&(this->messageStore->msg[0]));
 			}
 			sem_post(&(this->messageStore->done));
@@ -262,6 +262,8 @@ namespace ledMatrixD {
 				DMSG("%f seconds since shop status file was modified\n", this->secondsSinceModified(this->shopStatusFilename));
 				if(this->secondsSinceModified(this->shopStatusFilename) < (5*60))
 				{
+					this->readParameters();
+				}else{
 					this->readParameters();
 					this->callUpdateScript();
 				}

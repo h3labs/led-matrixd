@@ -646,6 +646,25 @@ namespace ledMatrixD {
       EXIT_MSG("ini config: could not load specified font file MESSAGE > message_font");
     }
     this->message = beacon->getMessage();
+	const char *utf8_text = NULL;
+DMSG("message \'%s\'\n", this->message.c_str());
+utf8_text = message.c_str();
+this->widths.clear();	
+DMSG("Entering loop\n");
+while (*utf8_text) {
+  DMSG("Character \'%c\' ", *utf8_text);
+  const uint32_t cp = utf8_next_codepoint(utf8_text);
+  const struct rgb_matrix::Font::Glyph *g = this->font.FindGlyph(cp);
+  if (g == NULL) g = this->font.FindGlyph(0xFFFD);
+  if (g == NULL) DMSG("Serious Error\n");
+  DMSG("w[%d]\n", g->width);
+  this->widths.push_back(g->width);
+}
+DMSG("Exiting loop\n");
+this->sumOfWidths = 0;
+for(auto it = this->widths.begin(); it != this->widths.end(); ++it)
+  this->sumOfWidths += *it;
+
   }
 
   void MessageDisplay::show(){
@@ -655,17 +674,19 @@ namespace ledMatrixD {
     //only if we get a new message else just go ahead and
     //display this message
         //get the sum of all widths
-    int midY = canvas->height() / 2 + (this->font.height() / 2);
+    int midY = canvas->height() / 2 + (this->font.height() / 3);
     rgb_matrix::Color white(255, 255, 255);
     rgb_matrix::Color black(0, 0, 0);
 	const char *utf8_text = NULL;
     for(int s = 0; s < this->scrolls; s++){
       std::string newMessage = beacon->getMessage();
-      if(!this->message.compare(newMessage)){
+	DMSG("Scroll %d\n", s);
+      if(this->message.compare(newMessage)){
         this->message = newMessage;
         DMSG("Got new message \'%s\'\n", this->message.c_str());
         utf8_text = message.c_str();
         this->widths.clear();	
+	DMSG("Entering loop\n");
         while (*utf8_text) {
           DMSG("Character \'%c\' ", *utf8_text);
           const uint32_t cp = utf8_next_codepoint(utf8_text);
@@ -675,11 +696,13 @@ namespace ledMatrixD {
           DMSG("w[%d]\n", g->width);
           this->widths.push_back(g->width);
         }
+	DMSG("Exiting loop\n");
         this->sumOfWidths = 0;
         for(auto it = this->widths.begin(); it != this->widths.end(); ++it)
           this->sumOfWidths += *it;
       }
-
+	
+	DMSG("sumOfWidths %d\n", this->sumOfWidths);
       for(int x = 0; x < this->sumOfWidths; x++){
         //draw the string
         utf8_text = message.c_str();
