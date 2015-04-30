@@ -27,9 +27,8 @@ echo "The beacon file is $beacon with $# parameters"
 if [ ! -e  "$beacon" ]
 then
 	t=$(date -u)
-	u="neon"
-	msg="booting up!"
-	out=$(urlencode "user=$u&time=$t&msg=$msg")
+	u="Neon"
+	out=$(urlencode "user=$u&time=$t&state=CLOSED")
 	echo "restoring with \"$out\""
 	echo -n "$out" > "$beacon"
 fi

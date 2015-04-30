@@ -30,7 +30,7 @@ install: led-matrixd
 	sudo cp -rfv $(INI) $(VARDIR)
 	sudo cp -rfv $(CFGDIR) $(VARDIR)
 	sudo cp -rfv $(FONTDIR) $(VARDIR)
-	sudo cp -rfv update.sh $(VARDIR)
+	sudo cp -rfv spaceupdate.sh $(VARDIR)
 	sudo cp -rfv restore.sh $(VARDIR)
 
 uninstall:
