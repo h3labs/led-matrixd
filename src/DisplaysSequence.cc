@@ -655,7 +655,7 @@ namespace ledMatrixD {
     //only if we get a new message else just go ahead and
     //display this message
         //get the sum of all widths
-    int midY = canvas->height() / 2 + (this->font.height() / 2);
+    int midY = canvas->height() / 2 + (this->font.height() / 3);
     rgb_matrix::Color white(255, 255, 255);
     rgb_matrix::Color black(0, 0, 0);
 	const char *utf8_text = NULL;
