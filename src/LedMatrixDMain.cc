@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 				exit(EXIT_FAILURE);
 		}
 	}
-	DMSG("Reading INI configuration file\n");
+	DMSG("Reading INI configuration file [%s]\n", ini::ini_file);
 	ini::read_file(ini::ini_file);
 	DMSG("Succesfully read INI file\n");
 	//  ledMatrixD::OpenCloseSign* openClose = NULL;

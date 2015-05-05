@@ -11,7 +11,7 @@ extern "C" {
 #define __INI_READER_H__
 
 namespace ini {
-  const char* ini_file = std::string("matrix.ini").c_str();
+  const char* ini_file = std::string("/var/led-matrixd/matrix.ini").c_str();
   struct ::collection_item* ini_config = NULL;
   struct ::collection_item* errors = NULL;
   struct ::collection_item* get_item(const char* section, const char* attribute){
