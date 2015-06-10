@@ -12,25 +12,28 @@ module LedMatrixD
 			#watch the filename	
 			@thread = Thread.new do	
 				notifier = INotify::Notifier.new
-				notifier.watch(@filename, :modify, :attrib) do |event|
-					p "#{@filename} was created"
-					p event.flags.to_s
-					p event.to_s
-					@beaconInfo.clear
-					beaconFile = File.open(@filename, "r")
-					beaconContent = beaconFile.read
-					beaconFile.close
-					p beaconContent
-					beaconContent = beaconContent[0, beaconContent.size - 1]
-					unless beaconContent.nil?
-						CGI::parse(beaconContent).each do |key, val|
-							@beaconInfo[key] = val
+				basename = File.basename(@filename)
+				dirWatcher = notifier.watch(File.dirname(@filename), :create, :attrib, :modify) do |event|
+					if basename == event.name
+						p event.flags.to_s
+						p event.name
+						@beaconInfo.clear
+						beaconFile = File.open(@filename, "r")
+						beaconContent = beaconFile.read
+						beaconFile.close
+						p beaconContent
+						unless beaconContent.nil?
+							if beaconContent[-1,1] == "\n"
+								beaconContent = beaconContent[0, beaconContent.size - 1]
+							end
+							CGI::parse(beaconContent).each do |key, val|
+								@beaconInfo[key] = val
+							end
 						end
+						p @beaconInfo
 					end
-					p @beaconInfo
 				end
 				while true
-					p "waiting..."
 					if IO.select([notifier.to_io], nil, nil, nil)
 						notifier.process				
 					end
@@ -39,9 +42,14 @@ module LedMatrixD
 		end
 		def join
 			p "waiting for thread to join"
+			while true
+				sleep(5)
+				p @beaconInfo
+			end
 			@thread.join
 		end
 		def getInfo key = nil
+			return @beaconInfo[key]
 		end
 	end
 end
