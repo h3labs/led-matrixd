@@ -1,0 +1,4 @@
+-first make sure you have ruby installation
+-sudo apt-get install ruby-dev
+-gem install bundle 
+-bundle install
