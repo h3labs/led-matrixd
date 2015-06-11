@@ -103,40 +103,7 @@ namespace ledMatrixD
 				return true;
 			}
 
-			struct Pixel {
-				Pixel() : red(0), green(0), blue(0){}
-				uint8_t red;
-				uint8_t green;
-				uint8_t blue;
-			};
-
-			struct Image {
-				Image() : width(-1), height(-1), image(NULL) {}
-				~Image() { Delete(); }
-				void Delete() { delete [] image; Reset(); }
-				void Reset() { image = NULL; width = -1; height = -1; }
-				inline bool IsValid() { return image && height > 0 && width > 0; }
-				const Pixel &getPixel(int x, int y) {
-					static Pixel black;
-					if (x < 0 || x >= width || y < 0 || y >= height) return black;
-					return image[x + width * y];
-				}
-
-				int width;
-				int height;
-				Pixel *image;
-			};
-
-			// Read line, skip comments.
-			char *ReadLine(FILE *f, char *buffer, size_t len) {
-				char *result;
-				do {
-					result = fgets(buffer, len, f);
-				} while (result != NULL && result[0] == '#');
-				return result;
-			}
-
-			Image current_image_;
+						Image current_image_;
 			std::string mainPath;
 	};
 	class TitleDisplay : public Display {

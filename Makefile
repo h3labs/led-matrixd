@@ -1,5 +1,5 @@
 CXXFLAGS=-Wall -g -O3 -DDEBUG -std=c++0x
-SRCS=$(addprefix src/,LedMatrixDMain.cc Beacon.cc DisplaysSequence.cc INIReader.cc)
+SRCS=$(addprefix src/, Native.cc)
 OBJS=$(SRCS:.cc=.o)
 DEPS=$(SRCS:.cc=.d)
 INITDIR=/etc/init.d/
@@ -12,17 +12,15 @@ BINARIES=led-matrix minimal-example text-example
 
 # Where our library resides. It is split between includes and the binary
 # library in lib
-RGB_INCDIR=include/
-RGB_LIBDIR=lib/
+RGB_INCDIR=rpi-rgb-led-matrix/include/
+RGB_LIBDIR=rpi-rgb-led-matrix/lib/
 RGB_LIBRARY_NAME=rgbmatrix
 RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
-LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread -lini_config
-CXXFLAGS+=-I$(RGB_INCDIR) -I$(RGB_LIBDIR)
+LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
+CXXFLAGS+=-I$(RGB_INCDIR) -I$(RGB_LIBDIR) -fpic
 
-all: led-matrixd
-
-led-matrixd: $(OBJS) $(RGB_LIBRARY)
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+libled-matrixd.so: $(OBJS) $(RGB_LIBRARY)
+	$(CXX) -shared $(CXXFLAGS) $(OBJS) -o $@ -Wl,--whole-archive $(RGB_LIBRARY) -Wl,--no-whole-archive $(LDFLAGS)
 
 install: led-matrixd
 	sudo install -v $^ $(BINDIR)
@@ -41,15 +39,6 @@ uninstall:
 
 $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
-
-led-matrix : src/demo-main.o $(RGB_LIBRARY)
-	$(CXX) $(CXXFLAGS) demo-main.o -o $@ $(LDFLAGS)
-
-minimal-example : src/minimal-example.o $(RGB_LIBRARY)
-	$(CXX) $(CXXFLAGS) minimal-example.o -o $@ $(LDFLAGS)
-
-text-example : src/text-example.o $(RGB_LIBRARY)
-	$(CXX) $(CXXFLAGS) text-example.o -o $@ $(LDFLAGS)
 
 %.o : %.cc
 	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
