@@ -28,7 +28,7 @@ module LedMatrixD
 			end
 			def show
 				currentStatus = @beacon.getInfo 'status'
-				currentStatus = 'closed' if currentStatus.nil?
+				currentStatus = 'closed' if currentStatus.nil? or not @statusArray.include? currentStatus
 				unless currentStatus.nil? 
 					statusI = @statusInfo[currentStatus]
 					p "current status #{currentStatus}"

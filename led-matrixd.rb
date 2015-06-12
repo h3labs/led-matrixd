@@ -12,52 +12,52 @@ Dir[File.join(File.dirname(__FILE__), 'led_matrix_d','**' ,'*.rb')].each do |fil
 	require file
 end
 
-
+#load configuration
 iniConfig = IniFile.load('matrix.ini')
+if iniConfig.nil? 
+	p "could not find 'matrix.ini' configuration file"
+end
+#initiate beacon file checking thread
 beacon = LedMatrixD::Beacon.new iniConfig
-LedMatrixD::Native.init
-#d1 = LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig
-#d2 = LedMatrixD::DisplayI::SpinLogoDisplay.new iniConfig
-#d3 = LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'title'
-#d4 = LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'tagline'
-#d5 = LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'twitter'
-#d6 = LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'url'
 beacon.run
-d7 = LedMatrixD::DisplayI::StatusDisplay.new iniConfig, beacon
+#initiate the matrix
+LedMatrixD::Native.init
+#initiate all displays and store in array
+displays = []
+displays.push(LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig)
+displays.push(LedMatrixD::DisplayI::SpinLogoDisplay.new iniConfig)
+displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'title')
+displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'tagline')
+displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'twitter')
+displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'url')
+displays.push(LedMatrixD::DisplayI::StatusDisplay.new iniConfig, beacon)
 
-def shut_down(d)
-	d.clean
+def shut_down(disps)
+	disps.each do |display|
+		p "Cleaning #{display.class.to_s}"
+		display.clean
+	end
 end
 
 Signal.trap("INT") { 
-p "cleaning up before shutdown"
-  #shut_down d3
-  #shut_down d4
-  #shut_down d5
-  #shut_down d6
-  shut_down d7
-beacon.stop
-LedMatrixD::Native.clear
-  exit
+	p "cleaning up before shutdown"
+	shut_down(displays)
+	beacon.stop
+	LedMatrixD::Native.clear
+	exit
 }
  
 # Trap `Kill `
 Signal.trap("TERM") {
-p "cleaning up before shutdown" #shut_down d3
-  #shut_down d4
-  #shut_down d5
-  #shut_down d6
-  shut_down d7
-beacon.stop
-LedMatrixD::Native.clear
-  exit
+	p "TERM cleaning up before shutdown" #shut_down d3
+	shut_down(displays)
+	beacon.stop
+	LedMatrixD::Native.clear
+	exit
 }
-
+#run indefinitly
 while true
-	#d3.show
-	#d4.show
-	#d5.show
-	#d6.show
-	d7.show
+	displays.each do |display|
+		display.show
+	end
 end
-sleep(5)
