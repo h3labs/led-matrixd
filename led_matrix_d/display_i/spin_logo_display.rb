@@ -31,9 +31,9 @@ module LedMatrixD
 			end
 			def show
 				$logger.info "SpinLogoDisplay \n" + 
-					"running #{@iterations} iterations\n" +
-					"for #{@frameNumbers.size}\n" +
-					"each for #{@frameDuration}s"
+					"\t\trunning #{@iterations} iterations\n" +
+					"\t\tfor #{@frameNumbers.size} frames\n" +
+					"\t\teach for #{@frameDuration}s"
 				@iterations.times do 
 					@frameNumbers.each do |frame|
 						frameInfo = @frameInfo[frame]

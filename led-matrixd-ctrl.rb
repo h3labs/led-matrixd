@@ -7,4 +7,4 @@ options = {
 	:log_dir => '/var/log/',
 	:log_output => true
 }
-Daemons.run('led-matrixd.rb', options)
+Daemons.run('/var/led-matrixd/led-matrixd.rb', options)

@@ -20,8 +20,8 @@ module LedMatrixD
 			def show
 				$logger.info "ScrollImageDisplay\n" +
 					"\t\twith file #{@filename}\n" +
-					"\t\tfor #{@iterations}\n" +
-					"\t\tfor #{@scrollDur}s"
+					"\t\tfor #{@iterations}\n iterations" +
+					"\t\twith #{@scrollDur}ms per scroll"
 				unless @filename.nil?
 					@iterations.times do
 						LedMatrixD::Native.scroll_image @image, @scrollDur

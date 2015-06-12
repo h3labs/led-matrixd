@@ -5,10 +5,13 @@ DEPS=$(SRCS:.cc=.d)
 INITDIR=/etc/init.d/
 BINDIR=/bin/
 INI=matrix.ini
+LMD_CTRL=led-matrixd-ctrl.rb
+LMD=led-matrixd.rb
 CFGDIR=signcfg/
 FONTDIR=fonts/
 VARDIR=/var/led-matrixd/
-BINARIES=led-matrix minimal-example text-example
+LIBDIR=/lib/
+RUBY_LIB=led_matrix_d/
 
 # Where our library resides. It is split between includes and the binary
 # library in lib
@@ -19,17 +22,21 @@ RGB_LIBRARY=$(RGB_LIBDIR)/lib$(RGB_LIBRARY_NAME).a
 LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
 CXXFLAGS+=-I$(RGB_INCDIR) -I$(RGB_LIBDIR) -fpic
 
-libled-matrixd.so: $(OBJS) $(RGB_LIBRARY)
-	$(CXX) -shared $(CXXFLAGS) $(OBJS) -o $@ -Wl,--whole-archive $(RGB_LIBRARY) -Wl,--no-whole-archive $(LDFLAGS)
+all: libled-matrixd.so
 
-install: led-matrixd
-	sudo install -v $^ $(BINDIR)
+install: libled-matrixd.so
+	sudo install -v $(LMD_CTRL) $(INITDIR)
 	sudo mkdir -pv $(VARDIR)
-	sudo cp -rfv $(INI) $(VARDIR)
+	sudo install -v $(LMD) $(VARDIR)
+	sudo cp -fv $(INI) $(VARDIR)
 	sudo cp -rfv $(CFGDIR) $(VARDIR)
 	sudo cp -rfv $(FONTDIR) $(VARDIR)
-	sudo cp -rfv spaceupdate.sh $(VARDIR)
-	sudo cp -rfv restore.sh $(VARDIR)
+	sudo cp -rfv $(RUBY_LIB) $(VARDIR)
+	sudo cp -fv spaceupdate.sh $(VARDIR)
+	sudo cp -fv restore.sh $(VARDIR)
+
+libled-matrixd.so: $(OBJS) $(RGB_LIBRARY)
+	$(CXX) -shared $(CXXFLAGS) $(OBJS) -o $@ -Wl,--whole-archive $(RGB_LIBRARY) -Wl,--no-whole-archive $(LDFLAGS)
 
 uninstall:
 	sudo rm -rfv $(VARDIR)
