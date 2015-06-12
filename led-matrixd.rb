@@ -14,9 +14,10 @@ end
 iniConfig = IniFile.load('matrix.ini')
 #beacon = LedMatrixD::Beacon.new iniConfig
 LedMatrixD::Native.init
-d1 = LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig
+#d1 = LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig
+d2 = LedMatrixD::DisplayI::SpinLogoDisplay.new iniConfig
 while true
-	d1.show
+	d2.show
 end
 sleep(5)
 #beacon.run

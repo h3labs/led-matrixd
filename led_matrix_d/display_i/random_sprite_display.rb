@@ -20,7 +20,6 @@ module LedMatrixD
 				end
 				x.free
 				y.free
-				p self
 			end
 			def show()
 				@spriteIterations.times do
