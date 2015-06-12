@@ -47,12 +47,12 @@ namespace LedMatrixD {
 	}
 
 
-	bool LoadPPM(char* filename, void** new_image_ptr) {
+	bool LoadPPM(char* filename, void** new_image_ptr, int* width, int* height) {
 		FILE *f = fopen(filename, "r");
 		if (f == NULL) return false;
 		char header_buf[256];
 		const char *line = ReadLine(f, header_buf, sizeof(header_buf));
-	#define EXIT_WITH_MSG(m) { fprintf(stderr, "%s: %s |%s", filename, m, line); \
+#define EXIT_WITH_MSG(m) { fprintf(stderr, "%s: %s |%s", filename, m, line); \
 	fclose(f); return false; }
 		if (sscanf(line, "P6 ") == EOF)
 			EXIT_WITH_MSG("Can only handle P6 as PPM type.");
@@ -71,14 +71,16 @@ namespace LedMatrixD {
 			line = "";
 			EXIT_WITH_MSG("Not enough pixels read.");
 		}
-	#undef EXIT_WITH_MSG
+#undef EXIT_WITH_MSG
 		fclose(f);
 		fprintf(stderr, "Read image '%s' with %dx%d\n", filename,
 				new_width, new_height);
 		Image* image = new Image();
 		image->image = new_image;
 		image->width = new_width;
+		*width = image->width;
 		image->height = new_height;
+		*height = image->height;
 		*new_image_ptr = (void*)image;
 		//        std::cout << "Reading image \"" << filename << "\" with " << pixel_count << " pixels" << std::endl;
 		//		const Pixel &p = current_image_.getPixel(15, 15);
@@ -96,10 +98,10 @@ namespace LedMatrixD {
 		usleep((useconds_t)msecs);
 	}
 	/*
-	* - Remove main from demo-main.cc
-	* - Put load PPM in a C function
-	* - Put the different required functions in Ruby in C functions
-	*/
+	 * - Remove main from demo-main.cc
+	 * - Put load PPM in a C function
+	 * - Put the different required functions in Ruby in C functions
+	 */
 
 	extern "C" {	
 		int pwm_bits = -1;
@@ -123,7 +125,11 @@ namespace LedMatrixD {
 		void clear(){
 		}
 		void load_image(char* filename, void** image, int* width, int* height){
-			LoadPPM(filename, image);
+			LoadPPM(filename, image, width, height);
+		}
+		void free_image(void** image){
+			Image* current_image = (Image*)*image;
+			delete current_image;
 		}
 		void draw_image(void** image, int x_offset, int y_offset){
 			Image* current_image = (Image*)*image;
@@ -147,6 +153,45 @@ namespace LedMatrixD {
 				draw_image(image, j, 0);
 				wait((unsigned int) msecs);
 			}
+		}
+		void run_demo(int demo, int msecs, int scroll_ms){
+			ThreadedCanvasManipulator *image_gen = NULL;
+			switch(demo){
+				case 0:
+					image_gen = new RotatingBlockGenerator(canvas);
+					break;
+				case 1:
+					image_gen = new SimpleSquare(canvas);
+					break;
+
+				case 2:
+					image_gen = new ColorPulseGenerator(canvas);
+					break;
+
+				case 3:
+					image_gen = new GrayScaleBlock(canvas);
+					break;
+
+				case 4:
+					image_gen = new Sandpile(canvas, scroll_ms);
+					break;
+
+				case 5:
+					image_gen = new GameLife(canvas, scroll_ms);
+					break;
+
+				case 6:
+					image_gen = new Ant(canvas, scroll_ms);
+					break;
+
+				case 7:
+					image_gen = new VolumeBars(canvas, scroll_ms, canvas->width()/2);
+					break;
+			}
+			image_gen->Start();
+			wait((unsigned int)msecs);
+			delete image_gen;
+
 		}
 	}
 }

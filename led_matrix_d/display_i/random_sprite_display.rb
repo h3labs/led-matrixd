@@ -35,6 +35,11 @@ module LedMatrixD
 					sleep(@spriteDuration)
 				end	
 			end
+			def clean
+				@spriteHash.each do |k, v|
+					LedMatrixD::Native.free_image v[:content]
+				end
+			end
 		end
 	end
 end
