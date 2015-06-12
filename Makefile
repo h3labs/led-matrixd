@@ -26,7 +26,6 @@ all: libled-matrixd.so
 
 install: libled-matrixd.so
 	sudo install -v $(LMD_CTRL) $(INITDIR)
-	sudo update-rc.d $(LMD_CTRL) defaults
 	sudo mkdir -pv $(VARDIR)
 	sudo install -v $(LMD) $(VARDIR)
 	sudo cp -fv $(INI) $(VARDIR)
@@ -36,8 +35,15 @@ install: libled-matrixd.so
 	sudo cp -fv spaceupdate.sh $(VARDIR)
 	sudo cp -fv restore.sh $(VARDIR)
 
+install-init: install
+	sudo update-rc.d $(LMD_CTRL) defaults
+
 libled-matrixd.so: $(OBJS) $(RGB_LIBRARY)
 	$(CXX) -shared $(CXXFLAGS) $(OBJS) -o $@ -Wl,--whole-archive $(RGB_LIBRARY) -Wl,--no-whole-archive $(LDFLAGS)
+
+uninstall-init:
+	sudo update-rc.d $(LMD_CTRL) remove
+	
 
 uninstall:
 	sudo rm -rfv $(VARDIR)
