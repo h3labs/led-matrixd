@@ -3,6 +3,7 @@
 
 require 'daemons'
 options = {
+	:app_name => 'led-matrixd',
 	:backtrace => true,
 	:log_dir => '/var/log/',
 	:log_output => true
