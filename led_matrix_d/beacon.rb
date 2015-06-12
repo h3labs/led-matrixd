@@ -16,8 +16,8 @@ module LedMatrixD
 				basename = File.basename(@filename)
 				dirWatcher = notifier.watch(File.dirname(@filename), :create, :attrib, :modify) do |event|
 					if basename == event.name
-						p event.flags.to_s
-						p event.name
+						logger.info "got event flags " + event.flags.to_s
+						logger.info "for file " + event.name
 						readBeaconFile
 					end
 				end
@@ -32,7 +32,7 @@ module LedMatrixD
 			beaconFile = File.open(@filename, "r")
 			beaconContent = beaconFile.read
 			beaconFile.close
-			p beaconContent
+			logger.info beaconContent
 			unless beaconContent.nil?
 				if beaconContent[-1,1] == "\n"
 					beaconContent = beaconContent[0, beaconContent.size - 1]
@@ -41,11 +41,11 @@ module LedMatrixD
 					@beaconInfo[key] = val[0]
 				end
 			end
-			p @beaconInfo
+			logger.info @beaconInfo.to_s
 		end
 		def stop
-			p "stopping beacon thread"
-			p @beaconInfo
+			logger.info "stopping beacon thread"
+			logger.info @beaconInfo.to_s
 			@thread.kill
 		end
 		def getInfo key = nil

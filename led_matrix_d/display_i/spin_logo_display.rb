@@ -13,7 +13,7 @@ module LedMatrixD
 				h = FFI::MemoryPointer.new :int
 				@frameFiles.each do |filename|
 					number = filename[/([0-9]{3})\.ppm$/, 1].to_i
-					p "loading frame[#{number}] with file #{filename}"
+					logger.info "loading frame[#{number}] with file #{filename}"
 					@frameNumbers.push(number)
 					image = FFI::MemoryPointer.new :pointer
 					LedMatrixD::Native.load_image filename, image, w, h
@@ -30,18 +30,21 @@ module LedMatrixD
 				p "frames -> #{@frameNumbers.to_s}"
 			end
 			def show
+				logger.info "SpinLogoDisplay \n" + 
+					"running #{@iterations} iterations\n" +
+					"for #{@frameNumbers.size}\n" +
+					"each for #{@frameDuration}s"
 				@iterations.times do 
 					@frameNumbers.each do |frame|
 						frameInfo = @frameInfo[frame]
 						LedMatrixD::Native.draw_image frameInfo[:image], 0, 0
-						p "sleeping for #{@frameDuration}s"
 						sleep(@frameDuration)
 					end
 				end
 			end	
 			def clean
 				@frameInfo.each do |k,v|
-					p "freeing frame[#{k}] with file #{v[:filename]}"
+					logger.info "freeing frame[#{k}] with file #{v[:filename]}"
 					LedMatrixD::Native.free_image v[:image] unless v[:image].nil?
 					v[:image].free unless v[:image].nil?
 				end
