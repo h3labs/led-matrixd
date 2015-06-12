@@ -26,6 +26,7 @@ all: libled-matrixd.so
 
 install: libled-matrixd.so
 	sudo install -v $(LMD_CTRL) $(INITDIR)
+	sudo update-rc.d $(LMD_CTRL) defaults
 	sudo mkdir -pv $(VARDIR)
 	sudo install -v $(LMD) $(VARDIR)
 	sudo cp -fv $(INI) $(VARDIR)
