@@ -7,8 +7,8 @@ module LedMatrixD
 				@which = which
 			end
 			def show
-				unless which.nil?	
-					LedMatrixD::Native.run_demo which, @duration, 400
+				unless @which.nil?	
+					LedMatrixD::Native.run_demo @which, @duration, 400
 				else
 					LedMatrixD::Native.run_demo @demoArray.sample, @duration, 400
 				end

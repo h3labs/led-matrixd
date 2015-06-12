@@ -7,6 +7,7 @@ module LedMatrixD
 			@restoreScript = iniConfig["FILE SYSTEM"]["shop_status_restore_script"]
 			@beaconInfo = ThreadSafe::Hash.new
 			@thread = nil
+			readBeaconFile
 		end
 		def run
 			#watch the filename	
@@ -17,20 +18,7 @@ module LedMatrixD
 					if basename == event.name
 						p event.flags.to_s
 						p event.name
-						@beaconInfo.clear
-						beaconFile = File.open(@filename, "r")
-						beaconContent = beaconFile.read
-						beaconFile.close
-						p beaconContent
-						unless beaconContent.nil?
-							if beaconContent[-1,1] == "\n"
-								beaconContent = beaconContent[0, beaconContent.size - 1]
-							end
-							CGI::parse(beaconContent).each do |key, val|
-								@beaconInfo[key] = val
-							end
-						end
-						p @beaconInfo
+						readBeaconFile
 					end
 				end
 				while true
@@ -40,13 +28,25 @@ module LedMatrixD
 				end
 			end
 		end
-		def join
-			p "waiting for thread to join"
-			while true
-				sleep(5)
-				p @beaconInfo
+		def readBeaconFile
+			beaconFile = File.open(@filename, "r")
+			beaconContent = beaconFile.read
+			beaconFile.close
+			p beaconContent
+			unless beaconContent.nil?
+				if beaconContent[-1,1] == "\n"
+					beaconContent = beaconContent[0, beaconContent.size - 1]
+				end
+				CGI::parse(beaconContent).each do |key, val|
+					@beaconInfo[key] = val[0]
+				end
 			end
-			@thread.join
+			p @beaconInfo
+		end
+		def stop
+			p "stopping beacon thread"
+			p @beaconInfo
+			@thread.kill
 		end
 		def getInfo key = nil
 			return @beaconInfo[key]
