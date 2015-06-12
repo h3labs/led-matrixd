@@ -34,9 +34,9 @@ module LedMatrixD
 					@frameNumbers.each do |frame|
 						frameInfo = @frameInfo[frame]
 						LedMatrixD::Native.draw_image frameInfo[:image], 0, 0
+						p "sleeping for #{@frameDuration}s"
+						sleep(@frameDuration)
 					end
-					p "sleeping for #{@frameDuration}s"
-					sleep(@frameDuration)
 				end
 			end	
 			def clean
