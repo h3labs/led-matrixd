@@ -1,9 +1,9 @@
 module LedMatrixD
 	module DisplayI
-		class RandomSpriteDisplay
+		class RandomSpriteDisplay < LedMatrixD::Display
 			def initialize(iniConfig)
 				@spriteDirname = iniConfig['FILE SYSTEM']['image_basedir']+iniConfig['FILE SYSTEM']['sprite_dir']
-				@spriteDuration = iniConfig['TIMING']['sprite_dur'] / 1000
+				@spriteDuration = iniConfig['TIMING']['sprite_dur'].to_f / 1000
 				@spriteIterations = iniConfig['ITERATIONS']['random_times']
 				@spriteArray = Dir["#{@spriteDirname + '*'}.ppm"]
 				@spriteHash = {}

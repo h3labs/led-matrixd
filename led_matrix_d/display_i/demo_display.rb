@@ -1,6 +1,6 @@
 module LedMatrixD
 	module DisplayI
-		class DemoDisplay
+		class DemoDisplay < LedMatrixD::Display
 			def initialize(iniConfig, which=nil)
 				@duration = iniConfig['TIMING']['demo_dur']
 				@demoArray = 0..7.to_a

@@ -123,6 +123,7 @@ namespace LedMatrixD {
 			canvas = matrix;
 		}
 		void clear(){
+			canvas->Clear();
 		}
 		void load_image(char* filename, void** image, int* width, int* height){
 			LoadPPM(filename, image, width, height);
