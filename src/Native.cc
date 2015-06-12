@@ -73,10 +73,8 @@ namespace LedMatrixD {
 		}
 	#undef EXIT_WITH_MSG
 		fclose(f);
-	#ifdef DEBUG
 		fprintf(stderr, "Read image '%s' with %dx%d\n", filename,
 				new_width, new_height);
-	#endif
 		Image* image = new Image();
 		image->image = new_image;
 		image->width = new_width;
@@ -88,6 +86,15 @@ namespace LedMatrixD {
 		return true;
 	}
 
+	void wait(unsigned int msecs_){
+		unsigned int msecs = (msecs_ * 1000) % 1000000;
+		unsigned int secs = (msecs_ * 1000) / 1000000;
+#ifdef DEBUG
+		//std::cout << "Sleeping: " << secs << "s " << msecs << "us" << std::endl;
+#endif
+		sleep(secs);
+		usleep((useconds_t)msecs);
+	}
 	/*
 	* - Remove main from demo-main.cc
 	* - Put load PPM in a C function
@@ -115,12 +122,31 @@ namespace LedMatrixD {
 		}
 		void clear(){
 		}
-		void load_image(char* filename, void** image){
-			printf("loading ppm image file [%s]\n", filename);
+		void load_image(char* filename, void** image, int* width, int* height){
 			LoadPPM(filename, image);
 		}
-		void draw_image(char* filename, void* image){
-			
+		void draw_image(void** image, int x_offset, int y_offset){
+			Image* current_image = (Image*)*image;
+			const int screen_height = canvas->height();
+			const int screen_width = canvas->width();
+			for (int x = 0; x < screen_width; ++x) {
+				for (int y = 0; y < screen_height; ++y) {
+					const Pixel &p = current_image->getPixel(
+							(x_offset + x) % current_image->width, y);
+					canvas->SetPixel(x, y, p.red, p.green, p.blue);
+				}
+			}
+		}
+		void scroll_image(void** image, int msecs){
+			int scrollWidth = 1;
+			Image* current_image = (Image*)*image;
+			if((current_image->width - canvas->width()) > 0){
+				scrollWidth = current_image->width - canvas->width();
+			}
+			for(int j = 0; j < scrollWidth; j++){
+				draw_image(image, j, 0);
+				wait((unsigned int) msecs);
+			}
 		}
 	}
 }

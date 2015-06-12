@@ -11,10 +11,13 @@ Dir[File.join(File.dirname(__FILE__), 'led_matrix_d','**' ,'*.rb')].each do |fil
 	require file
 end
 
-#iniConfig = IniFile.load('matrix.ini')
+iniConfig = IniFile.load('matrix.ini')
 #beacon = LedMatrixD::Beacon.new iniConfig
-ptr = FFI::MemoryPointer.new :pointer
 LedMatrixD::Native.init
-LedMatrixD::Native.load_image "something", ptr
+d1 = LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig
+while true
+	d1.show
+end
+sleep(5)
 #beacon.run
 #beacon.join
