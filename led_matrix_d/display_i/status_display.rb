@@ -14,7 +14,7 @@ module LedMatrixD
 					files = Dir[@imageBaseDir + status +'.ppm']
 					filename = files[0] unless files.size == 0
 					image = FFI::MemoryPointer.new :pointer
-					p "loading status file [#{filename}] for scrolling"
+					$logger.info "loading status file [#{filename}] for scrolling"
 					LedMatrixD::Native.load_image filename, image, w, h unless filename.nil?
 					@statusInfo[status] = {
 						:filename => filename,
@@ -31,7 +31,9 @@ module LedMatrixD
 				currentStatus = 'closed' if currentStatus.nil? or not @statusArray.include? currentStatus
 				unless currentStatus.nil? 
 					statusI = @statusInfo[currentStatus]
-					p "current status #{currentStatus}"
+					$logger.info "StatusDisplay\n" +
+						"\t\twith file #{statusI[:filename]}\n" +
+						"\t\twith #{@scrollDur}ms per scroll"
 					unless statusI[:filename].nil?
 						@iterations.times do
 							LedMatrixD::Native.scroll_image statusI[:image], @scrollDur
@@ -41,7 +43,7 @@ module LedMatrixD
 			end
 			def clean
 				@statusInfo.each do |k,v|
-					p "freeing status[#{k}] image [#{v[:filename]}"
+					$logger.info "freeing status[#{k}] image [#{v[:filename]}"
 					LedMatrixD::Native.free_image v[:image] unless v[:filename].nil?
 				end
 			end

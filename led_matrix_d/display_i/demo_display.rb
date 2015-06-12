@@ -7,6 +7,9 @@ module LedMatrixD
 				@which = which
 			end
 			def show
+				$logger.info "DemoDisplay " +
+					"running demo number #{@which}" +
+					"for #{@duration}ms"
 				unless @which.nil?	
 					LedMatrixD::Native.run_demo @which, @duration, 400
 				else

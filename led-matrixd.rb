@@ -8,18 +8,18 @@ require 'logger'
 require_relative 'led_matrix_d/display.rb'
 
 #log setup
-logger = Logger.new(STDOUT)
+$logger = Logger.new(STDOUT)
 
-logger.info "initializing led-matrixd deamon"
+$logger.info "initializing led-matrixd deamon"
 Dir[File.join(File.dirname(__FILE__), 'led_matrix_d','**' ,'*.rb')].each do |file|
-	logger.info file.to_s
+	$logger.info "loading ruby file " + file.to_s
 	require file
 end
 #load configuration
 iniFilename = File.join(File.dirname(__FILE__),'matrix.ini')
 iniConfig = IniFile.load(iniFilename)
 if iniConfig.nil? 
-	logger.fatal "could not find '#{iniFilename}' configuration file"
+	$logger.fatal "could not find '#{iniFilename}' configuration file"
 	exit
 end
 #initiate beacon file checking thread
@@ -39,13 +39,13 @@ displays.push(LedMatrixD::DisplayI::StatusDisplay.new iniConfig, beacon)
 
 def shut_down(disps)
 	disps.each do |display|
-		logger.info "cleaning #{display.class.to_s}"
+		$logger.info "cleaning #{display.class.to_s}"
 		display.clean
 	end
 end
 
 Signal.trap("INT") { 
-	logger.info "cleaning up before shutdown"
+	$logger.info "cleaning up before shutdown"
 	shut_down(displays)
 	beacon.stop
 	LedMatrixD::Native.clear
@@ -54,7 +54,7 @@ Signal.trap("INT") {
  
 # Trap `Kill `
 Signal.trap("TERM") {
-	logger.info "TERM cleaning up before shutdown" #shut_down d3
+	$logger.info "TERM cleaning up before shutdown" #shut_down d3
 	shut_down(displays)
 	beacon.stop
 	LedMatrixD::Native.clear

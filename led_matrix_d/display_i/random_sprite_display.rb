@@ -25,11 +25,14 @@ module LedMatrixD
 				@spriteIterations.times do
 					image_name = @spriteArray.sample
 					image = @spriteHash[image_name][:content]
+					$logger.info "RandomSpriteDisplay\n" +
+						"\t\twith file #{image_name}\n" +
+						"\t\tfor #{@spriteDuration}s"
 					unless image.nil?
 						LedMatrixD::Native.draw_image image, 0, 0
 					else
-						p "tried to draw #{image_name}"
-						p "image is nil"
+						$logger.error "tried to draw #{image_name}"
+						$logger.error "image is nil"
 					end
 					sleep(@spriteDuration)
 				end	

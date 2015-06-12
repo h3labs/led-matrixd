@@ -10,7 +10,7 @@ module LedMatrixD
 				@image = FFI::MemoryPointer.new :pointer
 				w = FFI::MemoryPointer.new :int	
 				h = FFI::MemoryPointer.new :int	
-				p "loading file [#{@filename}] for scrolling"
+				$logger.info "loading file [#{@filename}] for scrolling"
 				LedMatrixD::Native.load_image @filename, @image, w, h unless @filename.nil?
 				@w = w.read_int
 				@h = h.read_int
@@ -18,6 +18,10 @@ module LedMatrixD
 				h.free
 			end
 			def show
+				$logger.info "ScrollImageDisplay\n" +
+					"\t\twith file #{@filename}\n" +
+					"\t\tfor #{@iterations}\n" +
+					"\t\tfor #{@scrollDur}s"
 				unless @filename.nil?
 					@iterations.times do
 						LedMatrixD::Native.scroll_image @image, @scrollDur
