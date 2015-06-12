@@ -4,6 +4,7 @@ require 'rb-inotify'
 require 'inifile'
 require 'ffi'
 require 'cgi'
+require 'logger'
 require_relative 'led_matrix_d/display.rb'
 
 
@@ -11,11 +12,14 @@ Dir[File.join(File.dirname(__FILE__), 'led_matrix_d','**' ,'*.rb')].each do |fil
 	p file.to_s
 	require file
 end
+#log setup
 
 #load configuration
-iniConfig = IniFile.load('matrix.ini')
+iniFilename = File.join(File.dirname(__FILE__),'matrix.ini')
+iniConfig = IniFile.load(iniFilename)
 if iniConfig.nil? 
-	p "could not find 'matrix.ini' configuration file"
+	p "could not find '#{iniFilename}' configuration file"
+	exit
 end
 #initiate beacon file checking thread
 beacon = LedMatrixD::Beacon.new iniConfig
@@ -24,7 +28,7 @@ beacon.run
 LedMatrixD::Native.init
 #initiate all displays and store in array
 displays = []
-displays.push(LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig)
+#displays.push(LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig)
 displays.push(LedMatrixD::DisplayI::SpinLogoDisplay.new iniConfig)
 displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'title')
 displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'tagline')
