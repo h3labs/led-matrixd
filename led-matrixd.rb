@@ -29,7 +29,8 @@ beacon.run
 LedMatrixD::Native.init
 #initiate all displays and store in array
 displays = []
-#displays.push(LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig)
+displays.push(LedMatrixD::DisplayI::RandomSpriteDisplay.new iniConfig)
+displays.push(LedMatrixD::DisplayI::DemoDisplay.new iniConfig)
 displays.push(LedMatrixD::DisplayI::SpinLogoDisplay.new iniConfig)
 displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'title')
 displays.push(LedMatrixD::DisplayI::ScrollImageDisplay.new iniConfig, 'tagline')
