@@ -7,11 +7,13 @@ BINDIR=/bin/
 INI=matrix.ini
 LMD_CTRL=led-matrixd-ctrl.rb
 LMD=led-matrixd.rb
+GEMS=Gemfile
 CFGDIR=signcfg/
 FONTDIR=fonts/
 VARDIR=/var/led-matrixd/
 LIBDIR=/lib/
-RUBY_LIB=led_matrix_d/
+RUBY_DIR=led_matrix_d/
+WEB_DIR=web/
 
 # Where our library resides. It is split between includes and the binary
 # library in lib
@@ -31,9 +33,11 @@ install: libled-matrixd.so
 	sudo cp -fv $(INI) $(VARDIR)
 	sudo cp -rfv $(CFGDIR) $(VARDIR)
 	sudo cp -rfv $(FONTDIR) $(VARDIR)
-	sudo cp -rfv $(RUBY_LIB) $(VARDIR)
+	sudo cp -rfv $(RUBY_DIR) $(VARDIR)
+	sudo cp -rfv $(WEB_DIR) $(VARDIR)
 	sudo cp -fv spaceupdate.sh $(VARDIR)
 	sudo cp -fv restore.sh $(VARDIR)
+	sudo cp -fv $(GEMS) $(VARDIR)
 
 install-init: install
 	sudo update-rc.d $(LMD_CTRL) defaults

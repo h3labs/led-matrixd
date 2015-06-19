@@ -11,7 +11,13 @@ require_relative 'led_matrix_d/display.rb'
 $logger = Logger.new(STDOUT)
 
 $logger.info "initializing led-matrixd deamon"
+$logger.info "Loading led_matrix_d directory"
 Dir[File.join(File.dirname(__FILE__), 'led_matrix_d','**' ,'*.rb')].each do |file|
+	$logger.info "loading ruby file " + file.to_s
+	require file
+end
+$logger.info "Loading web directory"
+Dir[File.join(File.dirname(__FILE__), 'web','**' ,'*.rb')].each do |file|
 	$logger.info "loading ruby file " + file.to_s
 	require file
 end
@@ -22,9 +28,14 @@ if iniConfig.nil?
 	$logger.fatal "could not find '#{iniFilename}' configuration file"
 	exit
 end
+$iniConfig = iniConfig
 #initiate beacon file checking thread
 beacon = LedMatrixD::Beacon.new iniConfig
 beacon.run
+#initiate server
+$web_server = Thread.new do 
+	Web::NeonWebServer.run!
+end
 #initiate the matrix
 LedMatrixD::Native.init
 #initiate all displays and store in array
@@ -50,6 +61,7 @@ Signal.trap("INT") {
 	shut_down(displays)
 	beacon.stop
 	LedMatrixD::Native.clear
+	$web_server.exit	
 	exit
 }
  
@@ -59,6 +71,7 @@ Signal.trap("TERM") {
 	shut_down(displays)
 	beacon.stop
 	LedMatrixD::Native.clear
+	$web_server.exit	
 	exit
 }
 #run indefinitly
