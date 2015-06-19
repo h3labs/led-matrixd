@@ -1,3 +1,4 @@
+ENV['BUNDLE_GEMFILE'] = '/var/led-matrixd/Gemfile'
 require 'thread'
 require 'thread_safe'
 require 'rb-inotify'
