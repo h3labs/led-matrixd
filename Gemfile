@@ -6,4 +6,10 @@ gem 'inifile', '~> 3.0.0'
 gem 'thread_safe', '~> 0.3.5'
 gem 'daemons', '~> 1.2.2'
 gem 'logger', '~> 1.2.8'
-
+#web server stuff
+gem 'sinatra', '~> 1.4.6'
+gem 'sinatra-flash', '0.3.0', require: 'sinatra/flash'
+gem 'data_mapper', '~> 1.2.0'
+gem 'dm-sqlite-adapter', '~> 1.2.0'
+gem 'bcrypt', '~> 3.1.10'
+gem 'warden', '~> 1.2.3'

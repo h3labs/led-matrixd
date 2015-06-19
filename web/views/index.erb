@@ -1,0 +1,8 @@
+<% if not warden.authenticated? %>
+  <p>This is neon! a webpage that allows certain h3 members to
+  manage the status of our led matrix sign outside. If you would
+  like to be able to do so, please talk to our board members and
+  they will get you setup</p>
+<% else %>
+  <%= erb :beacon_status, :locals => {:beacon => beacon} %>
+<% end %>

@@ -1,0 +1,11 @@
+<%= erb :beacon_status, :locals => { :beacon => beacon } %>
+<form action="/beacon_change" method="post">
+  <p>Message: <input type="text" name="beacon_info[msg]" /></p>
+  <p>Status: 
+    <select type="password" name="beacon_info[status]">
+      <option value="open" <% if beacon.get == "open" %> selected <% end %>>Open</option>
+      <option value="closed" <% if beacon.get == "closed" %> selected <% end %>>Closed</option>
+    </select>
+  </p>
+  <input type="submit" value="Change Beacon" />
+</form>

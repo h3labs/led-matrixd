@@ -1,0 +1,13 @@
+<% if beacon.exists? %>
+  Beacon file information:
+  <ul>
+    <% beacon.get_lastupdated do |lastupdated| %>
+      <li>last_updated: <%= lastupdated %></li>
+    <% end %>
+    <% beacon.get_params do |param_name, param_value| %>
+      <li><strong><%= param_name %>:</strong> <%= param_value %></li>
+    <% end %>
+  </ul>
+<% else %>
+  Beacon does not exist!
+<% end %>

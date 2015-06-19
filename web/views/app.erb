@@ -1,0 +1,28 @@
+<head>
+</head>
+<body>
+<h1>Neon</h1>
+
+<p>
+  <% if not warden.authenticated? %>
+    <a href="/auth/login">Log In</a>
+  <% else %>
+    <a href="/user/<%= warden.user.id %>"><%=warden.user.username%></a> | <a href="/beacon_change">Change Neon Status</a> | <a href="/auth/logout">Log Out</a></p>
+  <% end %>
+
+
+<% if flash[:success] %>
+  <div style="color:green;">
+  <%= flash[:success] %>
+  </div>
+<% end %>
+
+<% if flash[:error] %>
+  <div style="color:red;">
+    <%= flash[:error] %> 
+  </div>
+<% end %>
+
+<%= yield %>
+
+<body>
