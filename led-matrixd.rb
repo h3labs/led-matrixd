@@ -33,7 +33,8 @@ $iniConfig = iniConfig
 beacon = LedMatrixD::Beacon.new iniConfig
 beacon.run
 #initiate server
-$web_server = Thread.new do 
+
+$web_server = Process.fork do
 	Web::NeonWebServer.run!
 end
 #initiate the matrix
@@ -61,7 +62,7 @@ Signal.trap("INT") {
 	shut_down(displays)
 	beacon.stop
 	LedMatrixD::Native.clear
-	$web_server.exit	
+	Process.kill('TERM', $web_server)
 	exit
 }
  
@@ -71,7 +72,7 @@ Signal.trap("TERM") {
 	shut_down(displays)
 	beacon.stop
 	LedMatrixD::Native.clear
-	$web_server.exit	
+	Process.kill('TERM', $web_server)
 	exit
 }
 #run indefinitly
